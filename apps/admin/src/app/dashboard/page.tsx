@@ -1,3 +1,5 @@
+'use client';
+
 import { DataTable } from '@/components/DataTable';
 import { StatsCard } from '@/components/StatsCard';
 import { StatusBadge } from '@/components/StatusBadge';

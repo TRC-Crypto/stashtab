@@ -1,5 +1,7 @@
+'use client';
+
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { DataTable } from '@/components/DataTable';
 import { StatusBadge } from '@/components/StatusBadge';
 import {
@@ -10,15 +12,23 @@ import {
   type Transaction,
 } from '@/lib/mockData';
 
-interface UserDetailPageProps {
-  params: { id: string };
-}
-
-export default function UserDetailPage({ params }: UserDetailPageProps) {
-  const user = getUser(params.id);
+export default function UserDetailPage() {
+  const params = useParams();
+  const user = getUser(params.id as string);
 
   if (!user) {
-    notFound();
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <h1 className="text-2xl font-semibold mb-4">User Not Found</h1>
+        <p className="text-zinc-400 mb-6">The user you&apos;re looking for doesn&apos;t exist.</p>
+        <Link
+          href="/users"
+          className="px-4 py-2 bg-accent text-black rounded-lg hover:bg-accent-light"
+        >
+          Back to Users
+        </Link>
+      </div>
+    );
   }
 
   const transactions = getUserTransactions(user.id);
