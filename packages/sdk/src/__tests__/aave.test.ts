@@ -1,6 +1,6 @@
+import { SECONDS_PER_YEAR } from "@stashtab/config";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AaveService } from "../aave/AaveService";
-import { SECONDS_PER_YEAR } from "@stashtab/config";
 
 // Mock the client
 const mockPublicClient = {

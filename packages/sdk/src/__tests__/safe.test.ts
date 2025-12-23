@@ -1,6 +1,6 @@
+import { encodeFunctionData } from "viem";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SafeService } from "../safe/SafeService";
-import { encodeFunctionData } from "viem";
 
 // Mock viem's encodeFunctionData
 vi.mock("viem", async () => {

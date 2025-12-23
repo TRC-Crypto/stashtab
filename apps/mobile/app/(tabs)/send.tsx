@@ -1,14 +1,14 @@
-import { View, Text, TextInput, Pressable } from "react-native";
-import { useState } from "react";
-import { mockUser } from "@/lib/mockData";
+import { View, Text, TextInput, Pressable } from 'react-native';
+import { useState } from 'react';
+import { mockUser } from '@/lib/mockData';
 
 export default function SendScreen() {
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState("");
+  const [address, setAddress] = useState('');
+  const [amount, setAmount] = useState('');
 
   const handleSend = () => {
     // TODO: Implement send transaction
-    console.log("Send", { address, amount });
+    console.log('Send', { address, amount });
   };
 
   const isValid = address.length > 0 && parseFloat(amount) > 0;
@@ -17,16 +17,12 @@ export default function SendScreen() {
     <View className="flex-1 bg-surface-50 px-6 pt-16">
       {/* Header */}
       <Text className="text-white text-2xl font-semibold mb-2">Send</Text>
-      <Text className="text-zinc-400 mb-8">
-        Transfer USDC to any address
-      </Text>
+      <Text className="text-zinc-400 mb-8">Transfer USDC to any address</Text>
 
       {/* Balance */}
       <View className="bg-surface-100 rounded-xl border border-surface-300 p-4 mb-6">
         <Text className="text-zinc-400 text-sm">Available Balance</Text>
-        <Text className="text-white text-2xl font-semibold mt-1">
-          ${mockUser.balance} USDC
-        </Text>
+        <Text className="text-white text-2xl font-semibold mt-1">${mockUser.balance} USDC</Text>
       </View>
 
       {/* Address Input */}
@@ -56,10 +52,7 @@ export default function SendScreen() {
             keyboardType="decimal-pad"
             className="flex-1 px-2 py-4 text-white text-lg"
           />
-          <Pressable
-            onPress={() => setAmount(mockUser.balance.replace(",", ""))}
-            className="pr-4"
-          >
+          <Pressable onPress={() => setAmount(mockUser.balance.replace(',', ''))} className="pr-4">
             <Text className="text-yield font-medium">MAX</Text>
           </Pressable>
         </View>
@@ -67,7 +60,7 @@ export default function SendScreen() {
 
       {/* Quick Amounts */}
       <View className="flex-row space-x-3 mb-8">
-        {["25", "50", "100", "500"].map((val) => (
+        {['25', '50', '100', '500'].map((val) => (
           <Pressable
             key={val}
             onPress={() => setAmount(val)}
@@ -83,23 +76,16 @@ export default function SendScreen() {
         onPress={handleSend}
         disabled={!isValid}
         className={`py-4 rounded-xl items-center ${
-          isValid ? "bg-yield active:opacity-80" : "bg-surface-300"
+          isValid ? 'bg-yield active:opacity-80' : 'bg-surface-300'
         }`}
       >
-        <Text
-          className={`font-semibold text-lg ${
-            isValid ? "text-black" : "text-zinc-500"
-          }`}
-        >
+        <Text className={`font-semibold text-lg ${isValid ? 'text-black' : 'text-zinc-500'}`}>
           Send USDC
         </Text>
       </Pressable>
 
       {/* Fee Info */}
-      <Text className="text-zinc-500 text-sm text-center mt-4">
-        Network fee: ~$0.01
-      </Text>
+      <Text className="text-zinc-500 text-sm text-center mt-4">Network fee: ~$0.01</Text>
     </View>
   );
 }
-

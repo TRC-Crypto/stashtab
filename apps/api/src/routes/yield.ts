@@ -1,9 +1,20 @@
+import { zValidator } from '@hono/zod-validator';
 import { getChain, getAddresses, AAVE_POOL_ABI, rayToPercent } from '@stashtab/config';
 import { Hono } from 'hono';
 import { createPublicClient, http } from 'viem';
+import { z } from 'zod';
+import { publicRateLimit } from '../middleware';
 import type { Env } from '../types';
 
 const yieldRoutes = new Hono<{ Bindings: Env }>();
+
+// Apply relaxed rate limiting - these are public read endpoints
+yieldRoutes.use('*', publicRateLimit);
+
+// Query schema for history endpoint
+const HistoryQuerySchema = z.object({
+  period: z.enum(['1d', '7d', '30d', '90d']).optional().default('7d'),
+});
 
 /**
  * GET /yield/rate
@@ -55,14 +66,20 @@ yieldRoutes.get('/rate', async (c) => {
  * GET /yield/history
  * Get historical yield data (placeholder)
  */
-yieldRoutes.get('/history', async (c) => {
-  // In production, this would fetch historical APY data
-  // from a database or indexer
+yieldRoutes.get(
+  '/history',
+  zValidator('query', HistoryQuerySchema),
+  async (c) => {
+    const { period } = c.req.valid('query');
 
-  return c.json({
-    message: 'Historical yield data not yet implemented',
-    note: 'Would show APY over time',
-  });
-});
+    // In production, this would fetch historical APY data
+    // from a database or indexer
+
+    return c.json({
+      message: 'Historical yield data not yet implemented',
+      note: `Would show APY over ${period} period`,
+    });
+  }
+);
 
 export { yieldRoutes };

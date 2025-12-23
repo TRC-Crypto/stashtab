@@ -1,11 +1,11 @@
-import { View, Text, Pressable } from "react-native";
-import { router } from "expo-router";
+import { View, Text, Pressable } from 'react-native';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
   const handleLogin = () => {
     // TODO: Integrate with Privy
     // For now, navigate to home
-    router.replace("/(tabs)/home");
+    router.replace('/(tabs)/home');
   };
 
   return (
@@ -16,9 +16,7 @@ export default function LoginScreen() {
           <Text className="text-black text-4xl font-bold">S</Text>
         </View>
         <Text className="text-white text-3xl font-bold">Stashtab</Text>
-        <Text className="text-zinc-400 text-lg mt-2">
-          Your money, earning yield
-        </Text>
+        <Text className="text-zinc-400 text-lg mt-2">Your money, earning yield</Text>
       </View>
 
       {/* Features */}
@@ -29,9 +27,7 @@ export default function LoginScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-white font-medium">No seed phrases</Text>
-            <Text className="text-zinc-500 text-sm">
-              Sign in with email or social
-            </Text>
+            <Text className="text-zinc-500 text-sm">Sign in with email or social</Text>
           </View>
         </View>
         <View className="flex-row items-center">
@@ -40,9 +36,7 @@ export default function LoginScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-white font-medium">Auto yield</Text>
-            <Text className="text-zinc-500 text-sm">
-              Earn interest automatically via Aave
-            </Text>
+            <Text className="text-zinc-500 text-sm">Earn interest automatically via Aave</Text>
           </View>
         </View>
         <View className="flex-row items-center">
@@ -51,9 +45,7 @@ export default function LoginScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-white font-medium">Your keys</Text>
-            <Text className="text-zinc-500 text-sm">
-              Secure smart wallet you control
-            </Text>
+            <Text className="text-zinc-500 text-sm">Secure smart wallet you control</Text>
           </View>
         </View>
       </View>
@@ -64,18 +56,14 @@ export default function LoginScreen() {
           onPress={handleLogin}
           className="bg-yield py-4 rounded-xl items-center active:opacity-80"
         >
-          <Text className="text-black font-semibold text-lg">
-            Continue with Email
-          </Text>
+          <Text className="text-black font-semibold text-lg">Continue with Email</Text>
         </Pressable>
 
         <Pressable
           onPress={handleLogin}
           className="bg-surface-200 py-4 rounded-xl items-center border border-surface-300 active:opacity-80"
         >
-          <Text className="text-white font-semibold text-lg">
-            Continue with Google
-          </Text>
+          <Text className="text-white font-semibold text-lg">Continue with Google</Text>
         </Pressable>
       </View>
 
@@ -86,4 +74,3 @@ export default function LoginScreen() {
     </View>
   );
 }
-

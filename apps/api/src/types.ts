@@ -1,5 +1,8 @@
 import type { D1Database, KVNamespace } from '@cloudflare/workers-types';
 
+/**
+ * Cloudflare Worker environment bindings
+ */
 export interface Env {
   // D1 Database
   DB: D1Database;
@@ -10,7 +13,18 @@ export interface Env {
   PRIVY_APP_SECRET: string;
   RPC_URL: string;
   CHAIN_ID: string;
-  ENVIRONMENT: string;
+  ENVIRONMENT: 'development' | 'staging' | 'production';
+}
+
+/**
+ * Context variables available in request handlers
+ * Set by middleware and accessible via c.get('key')
+ */
+declare module 'hono' {
+  interface ContextVariableMap {
+    requestId: string;
+    userId?: string;
+  }
 }
 
 export interface User {

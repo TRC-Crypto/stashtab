@@ -37,6 +37,9 @@ Fork it. Deploy it. Make it yours.
 - **CI/CD** - GitHub Actions for lint, test, build, deploy
 - **Testing** - Vitest with example tests
 - **Setup Wizard** - Interactive CLI to configure everything
+- **API Documentation** - Interactive Swagger UI at `/docs`
+- **Type-Safe API** - Zod validation with OpenAPI generation
+- **Rate Limiting** - Built-in rate limiting with KV storage
 
 ## Getting Test Funds
 
@@ -95,6 +98,7 @@ pnpm dev
 - Web: http://localhost:3000
 - Admin: http://localhost:3001
 - API: http://localhost:8787
+- API Docs: http://localhost:8787/docs
 
 ### 5. Deploy
 
@@ -142,6 +146,7 @@ See [docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step deployment instructions.
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) - How it all fits together
+- [API Reference](docs/API.md) - REST API documentation and error codes
 - [Deployment](docs/DEPLOY.md) - Step-by-step deployment guide
 - [Customization](docs/CUSTOMIZE.md) - White-label and branding guide
 - [Integrations](docs/INTEGRATIONS.md) - Fiat, notifications, KYC setup

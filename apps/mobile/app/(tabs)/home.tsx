@@ -1,18 +1,13 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
-import { mockUser, mockTransactions, formatDate } from "@/lib/mockData";
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { mockUser, mockTransactions, formatDate } from '@/lib/mockData';
 
-function TransactionItem({
-  transaction,
-}: {
-  transaction: (typeof mockTransactions)[0];
-}) {
-  const isIncoming =
-    transaction.type === "deposit" || transaction.type === "receive";
+function TransactionItem({ transaction }: { transaction: (typeof mockTransactions)[0] }) {
+  const isIncoming = transaction.type === 'deposit' || transaction.type === 'receive';
   const icons = {
-    deposit: "📥",
-    withdrawal: "📤",
-    send: "➡️",
-    receive: "⬅️",
+    deposit: '📥',
+    withdrawal: '📤',
+    send: '➡️',
+    receive: '⬅️',
   };
 
   return (
@@ -21,19 +16,11 @@ function TransactionItem({
         <Text className="text-lg">{icons[transaction.type]}</Text>
       </View>
       <View className="flex-1">
-        <Text className="text-white font-medium capitalize">
-          {transaction.type}
-        </Text>
-        <Text className="text-zinc-500 text-sm">
-          {formatDate(transaction.timestamp)}
-        </Text>
+        <Text className="text-white font-medium capitalize">{transaction.type}</Text>
+        <Text className="text-zinc-500 text-sm">{formatDate(transaction.timestamp)}</Text>
       </View>
-      <Text
-        className={`font-mono font-semibold ${
-          isIncoming ? "text-yield" : "text-white"
-        }`}
-      >
-        {isIncoming ? "+" : "-"}${transaction.amount}
+      <Text className={`font-mono font-semibold ${isIncoming ? 'text-yield' : 'text-white'}`}>
+        {isIncoming ? '+' : '-'}${transaction.amount}
       </Text>
     </View>
   );
@@ -45,23 +32,17 @@ export default function HomeScreen() {
       {/* Header */}
       <View className="px-6 pt-16 pb-8">
         <Text className="text-zinc-400 text-lg">Welcome back</Text>
-        <Text className="text-white text-2xl font-semibold mt-1">
-          {mockUser.email}
-        </Text>
+        <Text className="text-white text-2xl font-semibold mt-1">{mockUser.email}</Text>
       </View>
 
       {/* Balance Card */}
       <View className="mx-6 bg-surface-100 rounded-2xl p-6 border border-surface-300">
         <Text className="text-zinc-400 mb-2">Total Balance</Text>
-        <Text className="text-white text-4xl font-bold">
-          ${mockUser.balance}
-        </Text>
+        <Text className="text-white text-4xl font-bold">${mockUser.balance}</Text>
         <View className="flex-row items-center mt-4">
           <View className="flex-1">
             <Text className="text-zinc-500 text-sm">Yield Earned</Text>
-            <Text className="text-yield font-semibold">
-              +${mockUser.yieldEarned}
-            </Text>
+            <Text className="text-yield font-semibold">+${mockUser.yieldEarned}</Text>
           </View>
           <View className="flex-1 items-end">
             <Text className="text-zinc-500 text-sm">Current APY</Text>
@@ -86,9 +67,7 @@ export default function HomeScreen() {
       {/* Transactions */}
       <View className="px-6 mt-8 mb-6">
         <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-white text-lg font-semibold">
-            Recent Activity
-          </Text>
+          <Text className="text-white text-lg font-semibold">Recent Activity</Text>
           <Pressable>
             <Text className="text-yield">See All</Text>
           </Pressable>
@@ -103,4 +82,3 @@ export default function HomeScreen() {
     </ScrollView>
   );
 }
-

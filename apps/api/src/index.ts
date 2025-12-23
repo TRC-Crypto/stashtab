@@ -1,52 +1,99 @@
+import { swaggerUI } from '@hono/swagger-ui';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
+import { requestId, structuredLogger, errorHandler, notFoundHandler } from './middleware';
+import { openAPISpec } from './openapi';
 import { accountRoutes } from './routes/account';
 import { authRoutes } from './routes/auth';
 import { yieldRoutes } from './routes/yield';
 import type { Env } from './types';
 
+// ============================================================================
+// App Configuration
+// ============================================================================
+
 const app = new Hono<{ Bindings: Env }>();
 
-// Middleware
-app.use('*', logger());
+// ============================================================================
+// Global Middleware (order matters!)
+// ============================================================================
+
+// 1. Request ID - first so all logs have it
+app.use('*', requestId());
+
+// 2. Structured logging
+app.use('*', structuredLogger());
+
+// 3. CORS
 app.use(
   '*',
   cors({
-    origin: ['http://localhost:3000', 'https://stashtab.dev'],
+    origin: (origin) => {
+      // Allow localhost for development
+      if (origin?.includes('localhost')) return origin;
+      // Allow your production domains
+      if (origin?.includes('stashtab.dev')) return origin;
+      if (origin?.includes('stashtab.com')) return origin;
+      // Cloudflare Pages preview URLs
+      if (origin?.includes('.pages.dev')) return origin;
+      return null;
+    },
     credentials: true,
+    allowHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    exposeHeaders: ['X-Request-Id', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
   })
 );
 
-// Health check
+// ============================================================================
+// OpenAPI Documentation
+// ============================================================================
+
+// Serve OpenAPI spec
+app.get('/openapi.json', (c) => {
+  return c.json(openAPISpec);
+});
+
+// Swagger UI
+app.get(
+  '/docs',
+  swaggerUI({
+    url: '/openapi.json',
+    persistAuthorization: true,
+  })
+);
+
+// ============================================================================
+// Health Check
+// ============================================================================
+
 app.get('/', (c) => {
   return c.json({
     name: 'Stashtab API',
     version: '0.1.0',
     status: 'ok',
+    docs: '/docs',
+    openapi: '/openapi.json',
   });
 });
 
+// ============================================================================
 // Routes
+// ============================================================================
+
 app.route('/auth', authRoutes);
 app.route('/account', accountRoutes);
 app.route('/yield', yieldRoutes);
 
-// 404 handler
-app.notFound((c) => {
-  return c.json({ error: 'Not found' }, 404);
-});
+// ============================================================================
+// Error Handlers
+// ============================================================================
 
-// Error handler
-app.onError((err, c) => {
-  console.error('API Error:', err);
-  return c.json(
-    {
-      error: 'Internal server error',
-      message: err.message,
-    },
-    500
-  );
-});
+app.notFound(notFoundHandler);
+app.onError(errorHandler);
+
+// ============================================================================
+// Export
+// ============================================================================
 
 export default app;
