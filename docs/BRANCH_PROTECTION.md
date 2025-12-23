@@ -43,11 +43,21 @@ GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n..." \
 pnpm setup:branch-protection
 ```
 
-**Note**: The script currently requires a JWT library for full GitHub App support. For now, use Option 2 (Personal Access Token) or install `jsonwebtoken`:
+**Note**: The private key can include `\n` characters in the environment variable. The script will automatically handle them. You can also use a multi-line string:
 
 ```bash
-pnpm add -D jsonwebtoken @types/jsonwebtoken
+export GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+...
+-----END RSA PRIVATE KEY-----"
 ```
+
+The script will automatically:
+
+1. Generate a JWT using your App ID and private key
+2. Find the installation for your repository
+3. Exchange the JWT for an installation access token
+4. Use the token to configure branch protection
 
 ### Option 2: Personal Access Token
 
