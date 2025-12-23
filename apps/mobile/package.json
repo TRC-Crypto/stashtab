@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@expo/vector-icons": "^14.0.0",
+    "@expo/vector-icons": "^15.0.3",
     "@stashtab/config": "workspace:*",
     "@stashtab/sdk": "workspace:*",
     "expo": "~52.0.0",
