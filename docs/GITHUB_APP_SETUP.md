@@ -15,15 +15,15 @@ GitHub Apps provide:
 
 ### Step 1: Create the GitHub App
 
-1. Go to your organization's app settings:
-   - For organizations: `https://github.com/organizations/TRC-Crypto/settings/apps`
-   - For personal accounts: `https://github.com/settings/apps`
+1. Go to your GitHub App settings:
+   - **For personal accounts**: `https://github.com/settings/apps`
+   - **For organizations**: `https://github.com/organizations/YOUR-ORG-NAME/settings/apps`
 
-2. Click **"New GitHub App"**
+2. Click **"New GitHub App"** (or **"Register a new GitHub App"** on personal accounts)
 
 3. Fill in the basic information:
    - **GitHub App name**: `Stashtab Branch Protection` (or any name you prefer)
-   - **Homepage URL**: `https://github.com/TRC-Crypto/stashtab`
+   - **Homepage URL**: `https://github.com/YOUR-USERNAME/stashtab` (replace YOUR-USERNAME with your GitHub username)
    - **User authorization callback URL**: Leave empty (not needed for this use case)
    - **Webhook**: Uncheck (not needed)
    - **Webhook URL**: Leave empty
@@ -35,7 +35,8 @@ GitHub Apps provide:
 5. Leave all other permissions as "No access"
 
 6. Under **"Where can this GitHub App be installed?"**:
-   - Select **"Only on this account"** (for organization) or **"Any account"** (if you want flexibility)
+   - **For personal accounts**: Select **"Only on this account"** (recommended for security)
+   - **For organizations**: Select **"Only on this account"** or **"Any account"** (if you want flexibility)
 
 7. Click **"Create GitHub App"**
 

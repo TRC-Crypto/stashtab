@@ -19,7 +19,9 @@ GitHub Apps provide:
 
 #### Setting up a GitHub App
 
-1. Go to your organization settings: https://github.com/organizations/TRC-Crypto/settings/apps
+1. Go to your GitHub App settings:
+   - **Personal account**: https://github.com/settings/apps
+   - **Organization**: https://github.com/organizations/YOUR-ORG-NAME/settings/apps
 2. Click **"New GitHub App"**
 3. Configure the app:
    - **Name**: `Stashtab Branch Protection`

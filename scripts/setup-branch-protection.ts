@@ -12,7 +12,8 @@
  *      GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts
  *
  * GitHub App Setup:
- *   1. Go to https://github.com/organizations/TRC-Crypto/settings/apps
+ *   1. Go to https://github.com/settings/apps (personal) or
+ *      https://github.com/organizations/YOUR-ORG/settings/apps (organization)
  *   2. Click "New GitHub App"
  *   3. Set name, homepage, and callback URL
  *   4. Permissions needed:
@@ -317,9 +318,7 @@ async function setupBranchProtection() {
         console.error(
           '   Make sure your GitHub App has "Administration: Read & write" permission.'
         );
-        console.error(
-          '   Check app permissions at: https://github.com/organizations/TRC-Crypto/settings/apps'
-        );
+        console.error('   Check app permissions at: https://github.com/settings/apps');
       }
     } else if (error.status === 404) {
       console.error(`❌ Repository ${REPO_OWNER}/${REPO_NAME} not found or you don't have access.`);
