@@ -70,12 +70,7 @@ async function setupBranchProtection() {
     await apiRequest('PUT', `/repos/${REPO_OWNER}/${REPO_NAME}/branches/${BRANCH}/protection`, {
       required_status_checks: {
         strict: true,
-        contexts: [
-          'CI / Build (push)',
-          'CI / Lint (push)',
-          'CI / Test (push)',
-          'CI / Type Check (push)',
-        ],
+        contexts: ['CI / Build', 'CI / Lint', 'CI / Test', 'CI / Type Check'],
       },
       enforce_admins: true,
       required_pull_request_reviews: {
@@ -111,10 +106,15 @@ async function setupBranchProtection() {
     console.log('  ✓ Do not allow branch deletion');
     console.log('');
     console.log('Required status checks:');
-    console.log('  - CI / Build (push)');
-    console.log('  - CI / Lint (push)');
-    console.log('  - CI / Test (push)');
-    console.log('  - CI / Type Check (push)');
+    console.log('  - CI / Build');
+    console.log('  - CI / Lint');
+    console.log('  - CI / Test');
+    console.log('  - CI / Type Check');
+    console.log('');
+    console.log('⚠️  Note: Status checks will only appear in branch protection settings');
+    console.log('   after they have run successfully at least once on the main branch.');
+    console.log("   If checks don't appear, wait for the CI workflow to complete,");
+    console.log('   or manually trigger it by pushing a commit to main.');
     console.log('');
     console.log('💡 Note: You can also configure this manually at:');
     console.log(`   https://github.com/${REPO_OWNER}/${REPO_NAME}/settings/branches`);

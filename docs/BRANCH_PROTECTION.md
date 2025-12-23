@@ -44,10 +44,17 @@ If you prefer to set up branch protection manually:
 - **Require status checks to pass before merging**:
   - ✅ Require branches to be up to date before merging
   - Select the following required status checks:
-    - `CI / Build (push)`
-    - `CI / Lint (push)`
-    - `CI / Test (push)`
-    - `CI / Type Check (push)`
+    - `CI / Build`
+    - `CI / Lint`
+    - `CI / Test`
+    - `CI / Type Check`
+
+**Important**: Status checks will only appear in the dropdown after they have run successfully at least once on the `main` branch. If you don't see the checks:
+
+1. Wait for the current CI workflow run to complete successfully
+2. Or push a commit to `main` to trigger the workflow
+3. Once the checks pass, they will appear in the branch protection settings
+
 - **Require conversation resolution before merging**: ✅ Enabled
 - **Do not allow bypassing the above settings**: ✅ Enabled (enforce for administrators)
 - **Restrict who can push to matching branches**: (optional, leave empty to allow all collaborators)
