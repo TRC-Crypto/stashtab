@@ -325,8 +325,9 @@ kycRoutes.post('/webhook', async (c) => {
     .bind(event.verificationId)
     .first();
 
+  let user: { id: string; privy_user_id: string } | null = null;
   if (userResult) {
-    const user = userResult as { id: string; privy_user_id: string };
+    user = userResult as { id: string; privy_user_id: string };
 
     // Update user's KYC status
     await c.env.DB.prepare(
@@ -360,7 +361,7 @@ kycRoutes.post('/webhook', async (c) => {
           },
         });
 
-        const notificationHub = new NotificationHub({ email: emailService });
+        const notificationHub = new NotificationHub(emailService);
 
         await notificationHub.sendKYCStatusEmail({
           to: userEmail,

@@ -17,7 +17,14 @@ import type { Env } from '../types';
 
 export interface CacheConfig {
   ttl?: number; // Time to live in seconds
-  keyGenerator?: (c: { req: { method: string; url: string; path: string } }) => string;
+  keyGenerator?: (c: {
+    req: {
+      method: string;
+      url: string;
+      path: string;
+      header: (name: string) => string | undefined;
+    };
+  }) => string;
   skip?: (c: { req: { method: string } }) => boolean;
   vary?: string[]; // Headers to include in cache key
 }
@@ -27,7 +34,9 @@ const DEFAULT_TTL = 60; // 1 minute default
 /**
  * Generate cache key from request
  */
-function defaultKeyGenerator(c: { req: { method: string; url: string; path: string } }): string {
+function defaultKeyGenerator(c: {
+  req: { method: string; url: string; path: string; header: (name: string) => string | undefined };
+}): string {
   const url = new URL(c.req.url);
   return `cache:${c.req.method}:${c.req.path}:${url.search}`;
 }
