@@ -1,0 +1,26 @@
+{
+  "name": "@stashtab/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "wrangler d1 migrations apply stashtab-db --local",
+    "db:migrate:prod": "wrangler d1 migrations apply stashtab-db"
+  },
+  "dependencies": {
+    "@privy-io/server-auth": "^1.14.0",
+    "@stashtab/config": "workspace:*",
+    "@stashtab/sdk": "workspace:*",
+    "hono": "^4.6.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241112.0",
+    "typescript": "^5.3.0",
+    "wrangler": "^3.91.0"
+  }
+}
+

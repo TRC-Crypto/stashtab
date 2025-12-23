@@ -1,0 +1,10 @@
+# Privy Configuration
+# Get these from https://dashboard.privy.io
+PRIVY_APP_ID=
+PRIVY_APP_SECRET=
+
+# RPC URL for Base
+# Testnet: https://sepolia.base.org
+# Mainnet: Use Alchemy/Infura for reliability
+RPC_URL=https://sepolia.base.org
+
