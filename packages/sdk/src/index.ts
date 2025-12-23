@@ -13,3 +13,12 @@ export * from './client';
 // Types
 export * from './types';
 
+// Fiat on/off ramps
+export * as fiat from './fiat';
+
+// Notifications (email, push)
+export * as notifications from './notifications';
+
+// KYC/AML compliance
+export * as kyc from './kyc';
+

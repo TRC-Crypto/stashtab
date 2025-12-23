@@ -8,12 +8,17 @@
     ".": "./src/index.ts",
     "./safe": "./src/safe/index.ts",
     "./aave": "./src/aave/index.ts",
-    "./privy": "./src/privy/index.ts"
+    "./privy": "./src/privy/index.ts",
+    "./fiat": "./src/fiat/index.ts",
+    "./notifications": "./src/notifications/index.ts",
+    "./kyc": "./src/kyc/index.ts"
   },
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@safe-global/protocol-kit": "^4.1.0",

@@ -1,19 +1,42 @@
 # Stashtab
 
-**Open source DeFi neobank stack. Deposit, earn, send—on-chain.**
+**Neobank-in-a-Box. Open source DeFi neobank stack.**
 
-An open source reference implementation for building a DeFi-powered neobank. Deposit USDC, earn yield automatically via Aave, send to anyone—all abstracted for normal users.
+Everything you need to build a DeFi-powered neobank: web app, mobile app, admin dashboard, API, and integrations—all in one monorepo.
 
 **Not a company. Not a product. A public good.**
 
 Fork it. Deploy it. Make it yours.
 
+[![CI](https://github.com/TRC-Crypto/stashtab/actions/workflows/ci.yml/badge.svg)](https://github.com/TRC-Crypto/stashtab/actions/workflows/ci.yml)
+
 ## Features
 
+### Core
+
 - **Instant Setup** - Sign up with email or social login via Privy. No seed phrases.
-- **Auto Yield** - Your USDC is automatically deposited to Aave v3. Earn yield 24/7.
-- **Send Anywhere** - Transfer to other users instantly or withdraw to any Ethereum address.
-- **Smart Accounts** - Each user gets a Safe smart account for secure, programmable transactions.
+- **Auto Yield** - Deposits automatically earn yield via Aave v3.
+- **Smart Accounts** - Each user gets a Safe smart account.
+- **Send Anywhere** - Transfer to other users or external wallets.
+
+### Platform
+
+- **Web App** - Next.js frontend with Tailwind CSS
+- **Mobile App** - Expo/React Native with NativeWind (scaffolded)
+- **Admin Dashboard** - User management, transaction monitoring, settings
+- **API** - Cloudflare Workers with D1 database
+
+### Integrations (Stubs)
+
+- **Fiat On/Off Ramps** - Stripe, MoonPay patterns
+- **Notifications** - Email (Resend), Push (Expo/FCM)
+- **KYC/AML** - Persona, Sumsub patterns
+
+### Developer Experience
+
+- **CI/CD** - GitHub Actions for lint, test, build, deploy
+- **Testing** - Vitest with example tests
+- **Setup Wizard** - Interactive CLI to configure everything
 
 ## Getting Test Funds
 
@@ -50,17 +73,30 @@ cp apps/api/.dev.vars.example apps/api/.dev.vars
 
 Fill in your values (get Privy credentials from [dashboard.privy.io](https://dashboard.privy.io)).
 
-### 3. Start Development
+### 3. Run Setup Wizard (Recommended)
 
 ```bash
-# Start all apps in development mode
+pnpm setup
+```
+
+This interactive wizard will:
+- Create Cloudflare D1 database and KV namespace
+- Update wrangler.toml with your IDs
+- Generate .env files
+- Run database migrations
+
+### 4. Start Development
+
+```bash
+# Start all apps
 pnpm dev
 ```
 
-- Frontend: http://localhost:3000
+- Web: http://localhost:3000
+- Admin: http://localhost:3001
 - API: http://localhost:8787
 
-### 4. Deploy
+### 5. Deploy
 
 See [docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step deployment instructions.
 
@@ -108,22 +144,35 @@ See [docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step deployment instructions.
 - [Architecture](docs/ARCHITECTURE.md) - How it all fits together
 - [Deployment](docs/DEPLOY.md) - Step-by-step deployment guide
 - [Customization](docs/CUSTOMIZE.md) - White-label and branding guide
+- [Integrations](docs/INTEGRATIONS.md) - Fiat, notifications, KYC setup
+- [Mobile App](docs/MOBILE.md) - React Native development guide
+- [Admin Dashboard](docs/ADMIN.md) - Admin panel guide
+- [Testing](docs/TESTING.md) - Testing guide
 - [Security](docs/SECURITY.md) - Known risks, audit status, disclaimers
 
 ## Project Structure
 
 ```
 stashtab/
+├── .github/workflows/    # CI/CD (lint, test, build, deploy)
 ├── apps/
-│   ├── web/              # Next.js frontend (Cloudflare Pages)
-│   └── api/              # Cloudflare Workers backend
+│   ├── web/              # Next.js web app (Cloudflare Pages)
+│   ├── admin/            # Admin dashboard (Cloudflare Pages)
+│   ├── mobile/           # Expo React Native app
+│   └── api/              # Cloudflare Workers API
 ├── packages/
-│   ├── sdk/              # Core SDK (Safe, Aave, Privy)
+│   ├── sdk/              # Core SDK
+│   │   ├── safe/         # Safe smart account operations
+│   │   ├── aave/         # Aave yield operations
+│   │   ├── fiat/         # Fiat on/off ramp stubs
+│   │   ├── notifications/# Email & push notification stubs
+│   │   └── kyc/          # KYC/AML stubs
 │   ├── config/           # Shared ABIs, addresses, constants
 │   └── eslint-config/    # Shared ESLint configurations
+├── scripts/
+│   └── setup.ts          # Interactive setup wizard
 ├── docs/                 # Documentation
-├── turbo.json            # Turborepo config
-└── package.json          # Root package.json
+└── vitest.config.ts      # Test configuration
 ```
 
 ## Contributing

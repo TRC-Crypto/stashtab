@@ -9,6 +9,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:migrate": "wrangler d1 migrations apply stashtab-db --local",
     "db:migrate:prod": "wrangler d1 migrations apply stashtab-db"
   },
