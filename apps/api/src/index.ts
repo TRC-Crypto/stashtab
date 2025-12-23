@@ -2,10 +2,13 @@ import { swaggerUI } from '@hono/swagger-ui';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { requestId, structuredLogger, errorHandler, notFoundHandler } from './middleware';
+import { securityHeaders } from './middleware/security';
+import { sentryMiddleware } from './middleware/sentry';
 import { openAPISpec } from './openapi';
 import { accountRoutes } from './routes/account';
 import { authRoutes } from './routes/auth';
 import { fiatRoutes } from './routes/fiat';
+import { healthRoutes } from './routes/health';
 import { kycRoutes } from './routes/kyc';
 import { yieldRoutes } from './routes/yield';
 import type { Env } from './types';
@@ -26,7 +29,13 @@ app.use('*', requestId());
 // 2. Structured logging
 app.use('*', structuredLogger());
 
-// 3. CORS
+// 3. Sentry error tracking (if configured)
+app.use('*', sentryMiddleware());
+
+// 4. Security headers
+app.use('*', securityHeaders());
+
+// 5. CORS
 app.use(
   '*',
   cors({
@@ -93,6 +102,7 @@ app.route('/account', accountRoutes);
 app.route('/yield', yieldRoutes);
 app.route('/fiat', fiatRoutes);
 app.route('/kyc', kycRoutes);
+app.route('/', healthRoutes);
 
 // ============================================================================
 // Error Handlers

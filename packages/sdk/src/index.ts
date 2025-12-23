@@ -22,3 +22,8 @@ export * as notifications from './notifications';
 // KYC/AML compliance
 export * as kyc from './kyc';
 
+// Monitoring and observability
+export * from './monitoring';
+
+// Utilities
+export * from './utils';

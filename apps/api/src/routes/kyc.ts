@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator';
 import { PrivyClient } from '@privy-io/server-auth';
 import { createPersonaService } from '@stashtab/sdk/kyc';
+import { createEmailService, NotificationHub } from '@stashtab/sdk/notifications';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
@@ -318,11 +319,15 @@ kycRoutes.post('/webhook', async (c) => {
   console.log(`KYC webhook: ${event.type} - ${event.verificationId} - ${event.status}`);
 
   // Find user by inquiry ID
-  const user = await c.env.DB.prepare(`SELECT id FROM users WHERE kyc_inquiry_id = ?`)
+  const userResult = await c.env.DB.prepare(
+    `SELECT id, privy_user_id FROM users WHERE kyc_inquiry_id = ?`
+  )
     .bind(event.verificationId)
     .first();
 
-  if (user) {
+  if (userResult) {
+    const user = userResult as { id: string; privy_user_id: string };
+
     // Update user's KYC status
     await c.env.DB.prepare(
       `UPDATE users SET 
@@ -339,10 +344,37 @@ kycRoutes.post('/webhook', async (c) => {
       )
       .run();
 
-    // TODO: Send notification on status change
-    // if (event.status === 'approved') {
-    //   await sendNotification(user.id, 'KYC Approved', 'Your identity has been verified');
-    // }
+    // Send notification on status change
+    try {
+      // Get user's email from Privy
+      const privy = new PrivyClient(c.env.PRIVY_APP_ID, c.env.PRIVY_APP_SECRET);
+      const privyUser = await privy.getUser(user.privy_user_id);
+      const userEmail = privyUser.linkedAccounts.find((acc) => acc.type === 'email')?.address;
+
+      if (userEmail && c.env.RESEND_API_KEY && c.env.RESEND_FROM_EMAIL) {
+        const emailService = createEmailService({
+          apiKey: c.env.RESEND_API_KEY,
+          defaultFrom: {
+            email: c.env.RESEND_FROM_EMAIL,
+            name: 'Stashtab',
+          },
+        });
+
+        const notificationHub = new NotificationHub({ email: emailService });
+
+        await notificationHub.sendKYCStatusEmail({
+          to: userEmail,
+          status: event.status as 'pending' | 'in_review' | 'approved' | 'declined' | 'expired',
+          appUrl:
+            c.env.ENVIRONMENT === 'production'
+              ? 'https://app.stashtab.app'
+              : 'http://localhost:3000',
+        });
+      }
+    } catch (error) {
+      // Log error but don't fail the webhook
+      console.error('Failed to send KYC status notification:', error);
+    }
   }
 
   return c.json({ received: true, processed: !!user });

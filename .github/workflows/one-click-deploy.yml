@@ -1,0 +1,83 @@
+name: One-Click Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+      skip_resources:
+        description: 'Skip resource creation (D1, KV)'
+        required: false
+        default: false
+        type: boolean
+      skip_migrations:
+        description: 'Skip database migrations'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: one-click-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Cloudflare authentication
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "⚠️ CLOUDFLARE_API_TOKEN secret not set"
+            echo "Please add your Cloudflare API token to repository secrets"
+            exit 1
+          fi
+
+      - name: Authenticate with Cloudflare
+        run: |
+          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | npx wrangler login --api-token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Run automated deployment
+        run: |
+          pnpm deploy:auto \
+            ${{ inputs.environment == 'production' && '--production' || '' }} \
+            ${{ inputs.skip_resources == 'true' && '--skip-resources' || '' }} \
+            ${{ inputs.skip_migrations == 'true' && '--skip-migrations' || '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Resources Created**: ${{ inputs.skip_resources == 'false' && 'Yes' || 'No' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Migrations Run**: ${{ inputs.skip_migrations == 'false' && 'Yes' || 'No' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check Cloudflare dashboard for deployment URLs." >> $GITHUB_STEP_SUMMARY

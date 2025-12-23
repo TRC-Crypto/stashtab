@@ -15,6 +15,15 @@ examples/
 # Scripts (TypeScript files run with tsx)
 scripts/
 
+# E2E tests (Playwright)
+e2e/
+
+# Load tests
+tests/
+
+# Templates
+templates/
+
 # Config files
 *.config.js
 *.config.ts

@@ -1,16 +1,21 @@
 /**
  * Sumsub KYC Integration
  *
+ * ⚠️ PLANNED FEATURE - Not yet implemented
+ *
  * This is a stub implementation for Sumsub identity verification.
  * Sumsub provides global KYC/AML verification.
  *
- * To implement:
+ * Status: Planned for v0.2.0 (see ROADMAP.md)
+ *
+ * To implement when ready:
  * 1. Sign up for Sumsub (https://sumsub.com)
  * 2. Create applicant flow
  * 3. Get API credentials from dashboard
  * 4. Replace stub methods with actual Sumsub API calls
  *
  * @see https://docs.sumsub.com/reference
+ * @see ROADMAP.md for release timeline
  */
 
 import type {
@@ -35,7 +40,12 @@ export class SumsubKYCService implements KYCService {
   }
 
   async createVerification(request: VerificationRequest): Promise<VerificationSession> {
-    // TODO: Implement with Sumsub API
+    // NOTE: Sumsub integration is planned for v0.2.0
+    // This is a stub implementation for type safety
+    throw new Error(
+      'Sumsub KYC integration is not yet implemented. Planned for v0.2.0. See ROADMAP.md for details.'
+    );
+    // TODO: Implement with Sumsub API when feature is ready
     // 1. Create applicant
     // const applicant = await fetch(`${this.baseUrl}/resources/applicants`, {
     //   method: 'POST',
@@ -62,36 +72,29 @@ export class SumsubKYCService implements KYCService {
     };
   }
 
-  async getVerification(verificationId: string): Promise<UserIdentity> {
-    // TODO: Implement with Sumsub API
-    // const response = await fetch(
-    //   `${this.baseUrl}/resources/applicants/${verificationId}/one`,
-    //   { headers: this.getHeaders() }
-    // );
-
-    return {
-      id: verificationId,
-      userId: 'user_123',
-      status: 'pending',
-      level: 'standard',
-      documents: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async getVerification(_verificationId: string): Promise<UserIdentity> {
+    // NOTE: Sumsub integration is planned for v0.2.0
+    // See ROADMAP.md for details
+    // This is a stub implementation for type safety
+    throw new Error(
+      'Sumsub KYC integration is not yet implemented. Planned for v0.2.0. See ROADMAP.md for details.'
+    );
   }
 
   async getUserVerification(_userId: string): Promise<UserIdentity | null> {
-    // TODO: Implement with Sumsub API
-    // const response = await fetch(
-    //   `${this.baseUrl}/resources/applicants/-;externalUserId=${userId}/one`,
-    //   { headers: this.getHeaders() }
-    // );
-
-    return null;
+    // NOTE: Sumsub integration is planned for v0.2.0
+    // See ROADMAP.md for details
+    throw new Error(
+      'Sumsub KYC integration is not yet implemented. Planned for v0.2.0. See ROADMAP.md for details.'
+    );
   }
 
   async resumeVerification(verificationId: string): Promise<VerificationSession> {
-    // TODO: Get new access token for existing applicant
+    // NOTE: Sumsub integration is planned for v0.2.0
+    throw new Error(
+      'Sumsub KYC integration is not yet implemented. Planned for v0.2.0. See ROADMAP.md for details.'
+    );
+    // TODO: Get new access token for existing applicant when feature is ready
     return {
       id: verificationId,
       userId: 'user_123',
@@ -109,8 +112,11 @@ export class SumsubKYCService implements KYCService {
     dateOfBirth?: string;
     country?: string;
   }): Promise<SanctionsCheckResult> {
-    // TODO: Implement with Sumsub screening API
-
+    // NOTE: Sumsub integration is planned for v0.2.0
+    throw new Error(
+      'Sumsub KYC integration is not yet implemented. Planned for v0.2.0. See ROADMAP.md for details.'
+    );
+    // TODO: Implement with Sumsub screening API when feature is ready
     return {
       checked: true,
       checkedAt: new Date(),
@@ -121,20 +127,26 @@ export class SumsubKYCService implements KYCService {
   }
 
   async getVerificationUrl(_verificationId: string): Promise<string> {
-    // TODO: Generate new access token and return SDK URL
-    return `https://websdk.sumsub.com?accessToken=stub_token`;
+    // NOTE: Sumsub integration is planned for v0.2.0
+    throw new Error(
+      'Sumsub KYC integration is not yet implemented. Planned for v0.2.0. See ROADMAP.md for details.'
+    );
+    // TODO: Generate new access token and return SDK URL when feature is ready
   }
 
   verifyWebhook(_payload: string, _signature: string): boolean {
-    // TODO: Implement Sumsub webhook verification
+    // NOTE: Sumsub integration is planned for v0.2.0
+    // This method will be implemented when Sumsub support is added
     // Sumsub signs webhooks with HMAC-SHA1
+    // See: https://docs.sumsub.com/reference/webhooks
 
     if (!this.config.webhookSecret) {
       console.warn('Webhook secret not configured');
       return false;
     }
 
-    return this.config.environment === 'sandbox';
+    // Stub implementation - always returns false for safety
+    return false;
   }
 
   parseWebhook(payload: string): WebhookEvent {
@@ -173,15 +185,17 @@ export class SumsubKYCService implements KYCService {
 
   /**
    * Generate signed request headers for Sumsub API
+   *
+   * NOTE: This is a stub implementation. Sumsub integration is planned for v0.2.0
    */
   private getHeaders(): Record<string, string> {
-    // TODO: Implement proper Sumsub authentication
+    // TODO: Implement proper Sumsub authentication when feature is ready
     // Sumsub uses HMAC-SHA256 signing of requests
     // See: https://docs.sumsub.com/reference/authentication
 
     return {
       'Content-Type': 'application/json',
-      'X-App-Token': this.config.apiKey,
+      'X-App-Token': this.config.apiKey || 'stub-token',
     };
   }
 }

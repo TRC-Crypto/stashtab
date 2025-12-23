@@ -5,6 +5,7 @@ Stashtab uses Vitest for unit and integration testing.
 ## Overview
 
 The testing setup includes:
+
 - Vitest as the test runner
 - Example tests for SDK services
 - API route tests
@@ -42,8 +43,8 @@ apps/api/src/__tests__/
 Test service methods with mocked dependencies:
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AaveService } from "../aave/AaveService";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AaveService } from '../aave/AaveService';
 
 // Mock the client
 const mockPublicClient = {
@@ -51,7 +52,7 @@ const mockPublicClient = {
   chain: { id: 84532 },
 } as any;
 
-describe("AaveService", () => {
+describe('AaveService', () => {
   let service: AaveService;
 
   beforeEach(() => {
@@ -59,14 +60,14 @@ describe("AaveService", () => {
     service = new AaveService(mockPublicClient, 84532);
   });
 
-  it("should calculate yield per second", () => {
+  it('should calculate yield per second', () => {
     const result = service.calculateYieldPerSecond(1000_000000n, 5.0);
     expect(result).toBeGreaterThan(0n);
   });
 
-  it("should format balance correctly", () => {
+  it('should format balance correctly', () => {
     const formatted = service.formatBalance(1234_567890n, 2);
-    expect(formatted).toBe("1234.56");
+    expect(formatted).toBe('1234.56');
   });
 });
 ```
@@ -76,7 +77,7 @@ describe("AaveService", () => {
 Test API endpoints with mocked environment:
 
 ```typescript
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from 'vitest';
 
 const mockEnv = {
   DB: {
@@ -85,16 +86,16 @@ const mockEnv = {
     first: vi.fn(),
     run: vi.fn(),
   },
-  PRIVY_APP_ID: "test-app-id",
-  PRIVY_APP_SECRET: "test-secret",
+  PRIVY_APP_ID: 'test-app-id',
+  PRIVY_APP_SECRET: 'test-secret',
 };
 
-describe("Auth API", () => {
-  it("should validate required fields", () => {
+describe('Auth API', () => {
+  it('should validate required fields', () => {
     // Test validation logic
   });
 
-  it("should create user with Safe address", async () => {
+  it('should create user with Safe address', async () => {
     mockEnv.DB.first.mockResolvedValue(null);
     mockEnv.DB.run.mockResolvedValue({ success: true });
 
@@ -108,8 +109,8 @@ describe("Auth API", () => {
 Test multiple components working together:
 
 ```typescript
-describe("User Flow", () => {
-  it("should complete signup flow", async () => {
+describe('User Flow', () => {
+  it('should complete signup flow', async () => {
     // 1. Create user
     // 2. Predict Safe address
     // 3. Store in database
@@ -123,11 +124,11 @@ describe("User Flow", () => {
 ### Viem Functions
 
 ```typescript
-vi.mock("viem", async () => {
-  const actual = await vi.importActual("viem");
+vi.mock('viem', async () => {
+  const actual = await vi.importActual('viem');
   return {
     ...actual,
-    encodeFunctionData: vi.fn().mockReturnValue("0xmockeddata"),
+    encodeFunctionData: vi.fn().mockReturnValue('0xmockeddata'),
   };
 });
 ```
@@ -135,10 +136,10 @@ vi.mock("viem", async () => {
 ### External Services
 
 ```typescript
-vi.mock("@privy-io/server-auth", () => ({
+vi.mock('@privy-io/server-auth', () => ({
   PrivyClient: vi.fn().mockImplementation(() => ({
     verifyAuthToken: vi.fn().mockResolvedValue({
-      userId: "test-user",
+      userId: 'test-user',
     }),
   })),
 }));
@@ -166,11 +167,19 @@ const mockKV = {
 
 ## Test Coverage
 
-Generate coverage reports:
+### Generating Coverage Reports
+
+Generate coverage reports locally:
 
 ```bash
+# Generate coverage report
 pnpm test -- --coverage
+
+# View HTML report
+open coverage/index.html
 ```
+
+### Coverage Configuration
 
 Coverage is configured in `vitest.config.ts`:
 
@@ -182,9 +191,50 @@ coverage: {
     "node_modules/",
     "**/*.test.ts",
     "**/*.config.ts",
+    "**/dist/**",
+    "**/.next/**",
   ],
+  thresholds: {
+    lines: 80,
+    functions: 80,
+    branches: 80,
+    statements: 80,
+  },
 }
 ```
+
+### Coverage Goals
+
+Stashtab aims for:
+
+- **Minimum**: 80% coverage across all packages
+- **Critical Paths**: 90%+ coverage (auth, transactions, KYC)
+- **SDK**: 85%+ coverage (core business logic)
+
+### Coverage Reports in CI
+
+Coverage reports are generated automatically in CI:
+
+- Reports are uploaded as artifacts
+- Available for 30 days
+- Can be downloaded from GitHub Actions
+
+### Improving Coverage
+
+1. **Identify Gaps**: Review coverage report
+2. **Add Tests**: Write tests for uncovered code
+3. **Focus on Critical Paths**: Prioritize business logic
+4. **Maintain Thresholds**: Don't let coverage drop below 80%
+
+### Coverage Exclusions
+
+The following are excluded from coverage:
+
+- Test files themselves
+- Configuration files
+- Build outputs
+- Type definitions
+- Example code
 
 ## CI/CD Integration
 
@@ -208,12 +258,12 @@ test:
 
 ```typescript
 // Good - tests behavior
-it("should return formatted currency", () => {
-  expect(formatUSDC(1000000n)).toBe("1.00");
+it('should return formatted currency', () => {
+  expect(formatUSDC(1000000n)).toBe('1.00');
 });
 
 // Bad - tests implementation details
-it("should call toFixed with 2", () => {
+it('should call toFixed with 2', () => {
   // ...
 });
 ```
@@ -222,12 +272,12 @@ it("should call toFixed with 2", () => {
 
 ```typescript
 // Good
-it("should return 0 yield for zero balance");
-it("should handle user not found error");
+it('should return 0 yield for zero balance');
+it('should handle user not found error');
 
 // Bad
-it("test1");
-it("works");
+it('test1');
+it('works');
 ```
 
 ### 3. Isolate Tests
@@ -242,11 +292,11 @@ beforeEach(() => {
 ### 4. Test Edge Cases
 
 ```typescript
-describe("calculateYieldPerSecond", () => {
-  it("should return 0 for zero balance");
-  it("should return 0 for zero APY");
-  it("should handle very large balances");
-  it("should handle very small APY");
+describe('calculateYieldPerSecond', () => {
+  it('should return 0 for zero balance');
+  it('should return 0 for zero APY');
+  it('should handle very large balances');
+  it('should handle very small APY');
 });
 ```
 
@@ -255,15 +305,15 @@ describe("calculateYieldPerSecond", () => {
 ```typescript
 // __tests__/fixtures.ts
 export const mockUser = {
-  id: "usr_1",
-  email: "test@example.com",
-  safeAddress: "0x1234...",
+  id: 'usr_1',
+  email: 'test@example.com',
+  safeAddress: '0x1234...',
 };
 
 export const mockTransaction = {
-  id: "tx_1",
-  type: "deposit",
-  amount: "100.00",
+  id: 'tx_1',
+  type: 'deposit',
+  amount: '100.00',
 };
 ```
 
@@ -297,4 +347,3 @@ pnpm test -- --reporter verbose
 3. Add edge cases and error handling
 
 4. Ensure tests pass in CI before merging
-

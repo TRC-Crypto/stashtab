@@ -1,0 +1,20 @@
+# GitHub Template Repository Configuration
+# This file helps GitHub identify this as a template repository
+
+name: Stashtab Neobank Template
+description: Open source DeFi neobank stack - Everything you need to build a neobank
+topics:
+  - defi
+  - neobank
+  - web3
+  - ethereum
+  - base
+  - cloudflare
+  - nextjs
+  - react-native
+  - typescript
+  - monorepo
+
+# Template repository settings
+# Enable this in GitHub repository settings → Template repository
+

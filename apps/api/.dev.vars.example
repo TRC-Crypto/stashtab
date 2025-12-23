@@ -1,10 +1,87 @@
+# ============================================================================
+# Core Configuration (Required)
+# ============================================================================
+
 # Privy Configuration
 # Get these from https://dashboard.privy.io
+# Required for user authentication
 PRIVY_APP_ID=
 PRIVY_APP_SECRET=
 
+# Chain Configuration
+# Chain ID: 84532 = Base Sepolia (testnet), 8453 = Base (mainnet)
+CHAIN_ID=84532
+
 # RPC URL for Base
 # Testnet: https://sepolia.base.org
-# Mainnet: Use Alchemy/Infura for reliability
+# Mainnet: Use Alchemy/Infura for reliability (recommended)
+# Example: https://base-mainnet.g.alchemy.com/v2/YOUR_API_KEY
 RPC_URL=https://sepolia.base.org
+
+# Environment
+# Options: development, staging, production
+ENVIRONMENT=development
+
+# ============================================================================
+# Fiat On/Off Ramp Providers (Optional)
+# ============================================================================
+
+# Stripe Configuration
+# Get from https://dashboard.stripe.com/apikeys
+# Required for Stripe fiat on/off ramp
+STRIPE_PUBLIC_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# MoonPay Configuration
+# Get from https://dashboard.moonpay.com/settings/api_keys
+# Required for MoonPay fiat on/off ramp
+MOONPAY_API_KEY=
+MOONPAY_SECRET_KEY=
+MOONPAY_WEBHOOK_SECRET=
+
+# ============================================================================
+# KYC/AML Providers (Optional)
+# ============================================================================
+
+# Persona Configuration
+# Get from https://app.withpersona.com/dashboard/settings/api
+# Required for Persona KYC integration
+PERSONA_API_KEY=
+PERSONA_TEMPLATE_ID=
+PERSONA_WEBHOOK_SECRET=
+
+# Sumsub Configuration
+# Get from https://sumsub.com/dashboard
+# Required for Sumsub KYC integration (planned for v0.2.0)
+SUMSUB_APP_TOKEN=
+SUMSUB_SECRET_KEY=
+SUMSUB_WEBHOOK_SECRET=
+
+# ============================================================================
+# Notification Providers (Optional)
+# ============================================================================
+
+# Resend Email Configuration
+# Get from https://resend.com/api-keys
+# Required for email notifications
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+
+# Expo Push Notifications
+# Get from https://expo.dev/accounts/[account]/projects/[project]/credentials
+# Required for push notifications in mobile app
+EXPO_ACCESS_TOKEN=
+
+# ============================================================================
+# Monitoring & Observability (Optional)
+# ============================================================================
+
+# Sentry Configuration
+# Get from https://sentry.io/settings/[org]/projects/[project]/keys/
+# Required for error tracking and performance monitoring
+SENTRY_DSN=
+SENTRY_ENVIRONMENT=development
+SENTRY_RELEASE=
+SENTRY_TRACES_SAMPLE_RATE=0.1
 

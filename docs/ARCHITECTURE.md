@@ -19,6 +19,7 @@ The frontend is a Next.js 14 application with the App Router. It handles:
 - **Withdraw** flow for withdrawing to external wallets
 
 Key technologies:
+
 - Next.js 14 (App Router, Server Components)
 - Tailwind CSS for styling
 - Framer Motion for animations
@@ -34,6 +35,7 @@ The backend is a Cloudflare Workers application using Hono framework. It handles
 - **Transaction Execution** - Executing deposits, withdrawals, and transfers
 
 Key technologies:
+
 - Cloudflare Workers (serverless)
 - Hono (web framework)
 - D1 (SQLite database)
@@ -55,6 +57,56 @@ The config package (`@stashtab/config`) provides:
 - **ABIs** for USDC, Aave Pool, Safe contracts
 - **Chain configurations** and RPC URLs
 - **Utility functions** for formatting and parsing
+
+## System Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph Frontend["Frontend Layer"]
+        Web[Web App<br/>Next.js]
+        Admin[Admin Dashboard<br/>Next.js]
+        Mobile[Mobile App<br/>Expo/React Native]
+    end
+
+    subgraph Backend["Backend Layer"]
+        API[API<br/>Cloudflare Workers]
+        DB[(D1 Database)]
+        KV[KV Cache]
+    end
+
+    subgraph Infrastructure["Infrastructure"]
+        Privy[Privy<br/>Authentication]
+        Safe[Safe<br/>Smart Accounts]
+        Aave[Aave v3<br/>Yield Generation]
+        Base[Base L2<br/>Blockchain]
+    end
+
+    subgraph Integrations["Integrations"]
+        Stripe[Stripe<br/>Fiat Ramp]
+        MoonPay[MoonPay<br/>Fiat Ramp]
+        Persona[Persona<br/>KYC]
+        Resend[Resend<br/>Email]
+        Expo[Expo<br/>Push]
+    end
+
+    Web --> API
+    Admin --> API
+    Mobile --> API
+
+    API --> DB
+    API --> KV
+    API --> Privy
+    API --> Safe
+    API --> Aave
+    API --> Stripe
+    API --> MoonPay
+    API --> Persona
+    API --> Resend
+    API --> Expo
+
+    Safe --> Base
+    Aave --> Base
+```
 
 ## User Flow
 
@@ -227,18 +279,20 @@ See [SECURITY.md](SECURITY.md) for detailed security considerations.
 ## Future Improvements
 
 ### Phase 1 (Current)
+
 - Basic deposit/earn/send/withdraw flow
 - Single-chain (Base)
 - Single yield source (Aave)
 
 ### Phase 2 (Future)
+
 - Multi-chain support
 - Multiple yield strategies
 - Spending limits and controls
 - Recovery mechanisms
 
 ### Phase 3 (Community)
+
 - Mobile apps
 - Fiat on/off ramps
 - Advanced yield optimization
-

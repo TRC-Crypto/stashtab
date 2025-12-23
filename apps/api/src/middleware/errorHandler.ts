@@ -2,6 +2,7 @@ import type { Context } from 'hono';
 import { ZodError } from 'zod';
 import { APIError, ErrorCode, ValidationError, wrapError, RateLimitError } from '../errors';
 import type { Env } from '../types';
+import { captureException } from './sentry';
 
 /**
  * Global Error Handler Middleware
@@ -79,6 +80,15 @@ export function errorHandler(err: Error, c: Context<{ Bindings: Env }>) {
     })
   );
 
+  // Capture exception in Sentry
+  captureException(err, {
+    requestId,
+    method: c.req.method,
+    path: c.req.path,
+    userId: c.get('userId'),
+    url: c.req.url,
+  });
+
   // Wrap unknown errors
   const wrappedError = wrapError(err);
 
@@ -112,4 +122,3 @@ export function notFoundHandler(c: Context<{ Bindings: Env }>) {
     404
   );
 }
-

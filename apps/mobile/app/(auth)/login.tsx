@@ -3,8 +3,10 @@ import { router } from 'expo-router';
 
 export default function LoginScreen() {
   const handleLogin = () => {
-    // TODO: Integrate with Privy
-    // For now, navigate to home
+    // NOTE: Privy React Native integration is planned for v0.2.0
+    // See ROADMAP.md for details
+    // For now, this is a mock implementation for UI development
+    // In production, this will use @privy-io/expo SDK
     router.replace('/(tabs)/home');
   };
 
