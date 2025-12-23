@@ -5,8 +5,8 @@
  * including email (Resend, SendGrid) and push notifications (Expo, FCM).
  */
 
-export type NotificationChannel = "email" | "push" | "sms";
-export type NotificationStatus = "pending" | "sent" | "delivered" | "failed" | "bounced";
+export type NotificationChannel = 'email' | 'push' | 'sms';
+export type NotificationStatus = 'pending' | 'sent' | 'delivered' | 'failed' | 'bounced';
 
 export interface EmailRecipient {
   email: string;
@@ -15,7 +15,7 @@ export interface EmailRecipient {
 
 export interface PushRecipient {
   token: string;
-  platform: "ios" | "android" | "web";
+  platform: 'ios' | 'android' | 'web';
 }
 
 export interface NotificationRecipient {
@@ -24,32 +24,45 @@ export interface NotificationRecipient {
   push?: PushRecipient;
 }
 
+export interface EmailAttachment {
+  filename: string;
+  content: string;
+  content_type?: string;
+}
+
 export interface EmailNotification {
   to: EmailRecipient | EmailRecipient[];
   from?: EmailRecipient;
+  replyTo?: EmailRecipient;
+  cc?: EmailRecipient | EmailRecipient[];
+  bcc?: EmailRecipient | EmailRecipient[];
   subject: string;
   html?: string;
   text?: string;
   template?: {
     id: string;
-    data: Record<string, any>;
+    data: Record<string, unknown>;
   };
-  replyTo?: string;
   tags?: string[];
+  attachments?: EmailAttachment[];
 }
 
 export interface PushNotification {
   to: string | string[]; // Push tokens
   title: string;
   body: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   badge?: number;
-  sound?: string;
+  sound?: string | null;
   icon?: string;
   image?: string;
   clickAction?: string;
-  priority?: "default" | "high";
+  priority?: 'default' | 'high';
   ttl?: number; // Time to live in seconds
+  expiration?: number; // Unix timestamp for expiration
+  channelId?: string; // Android notification channel
+  categoryId?: string; // iOS notification category
+  mutableContent?: boolean; // iOS mutable-content flag
 }
 
 export interface NotificationResult {
@@ -64,8 +77,11 @@ export interface NotificationResult {
 
 export interface NotificationServiceConfig {
   apiKey: string;
-  environment?: "development" | "production";
+  secretKey?: string;
+  accessToken?: string;
+  environment?: 'development' | 'production';
   defaultFrom?: EmailRecipient;
+  webhookSecret?: string;
 }
 
 /**
@@ -119,7 +135,7 @@ export interface PushService {
   /**
    * Register a device token
    */
-  registerDevice(userId: string, token: string, platform: "ios" | "android" | "web"): Promise<void>;
+  registerDevice(userId: string, token: string, platform: 'ios' | 'android' | 'web'): Promise<void>;
 
   /**
    * Unregister a device token
@@ -143,9 +159,8 @@ export interface NotificationService {
       title: string;
       body: string;
       template?: string;
-      data?: Record<string, any>;
+      data?: Record<string, unknown>;
     },
     channels?: NotificationChannel[]
   ): Promise<NotificationResult[]>;
 }
-

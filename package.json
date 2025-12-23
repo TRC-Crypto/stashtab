@@ -24,6 +24,8 @@
     "test:watch": "turbo test:watch",
     "clean": "turbo clean && rm -rf node_modules",
     "setup": "tsx scripts/setup.ts",
+    "setup:check": "tsx scripts/setup-check.ts",
+    "deploy": "turbo build && pnpm --filter @stashtab/api exec wrangler deploy",
     "prepare": "husky"
   },
   "devDependencies": {

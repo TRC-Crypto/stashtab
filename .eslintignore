@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Examples (don't lint example configs)
+examples/
+
+# Scripts (TypeScript files run with tsx)
+scripts/
+
+# Config files
+*.config.js
+*.config.ts
+
+# Generated files
+coverage/
+*.log
+

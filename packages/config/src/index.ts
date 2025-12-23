@@ -2,4 +2,4 @@ export * from './addresses';
 export * from './chains';
 export * from './constants';
 export * from './abis';
-
+export * from './types';

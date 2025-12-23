@@ -5,6 +5,8 @@ import { requestId, structuredLogger, errorHandler, notFoundHandler } from './mi
 import { openAPISpec } from './openapi';
 import { accountRoutes } from './routes/account';
 import { authRoutes } from './routes/auth';
+import { fiatRoutes } from './routes/fiat';
+import { kycRoutes } from './routes/kyc';
 import { yieldRoutes } from './routes/yield';
 import type { Env } from './types';
 
@@ -41,7 +43,12 @@ app.use(
     credentials: true,
     allowHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    exposeHeaders: ['X-Request-Id', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
+    exposeHeaders: [
+      'X-Request-Id',
+      'X-RateLimit-Limit',
+      'X-RateLimit-Remaining',
+      'X-RateLimit-Reset',
+    ],
   })
 );
 
@@ -84,6 +91,8 @@ app.get('/', (c) => {
 app.route('/auth', authRoutes);
 app.route('/account', accountRoutes);
 app.route('/yield', yieldRoutes);
+app.route('/fiat', fiatRoutes);
+app.route('/kyc', kycRoutes);
 
 // ============================================================================
 // Error Handlers

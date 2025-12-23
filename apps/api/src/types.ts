@@ -8,12 +8,30 @@ export interface Env {
   DB: D1Database;
   // KV Namespace for caching
   CACHE: KVNamespace;
-  // Environment variables
+  // Core environment variables
   PRIVY_APP_ID: string;
   PRIVY_APP_SECRET: string;
   RPC_URL: string;
   CHAIN_ID: string;
   ENVIRONMENT: 'development' | 'staging' | 'production';
+  // Fiat on/off ramp providers (optional)
+  STRIPE_PUBLIC_KEY?: string;
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  MOONPAY_API_KEY?: string;
+  MOONPAY_SECRET_KEY?: string;
+  MOONPAY_WEBHOOK_SECRET?: string;
+  // KYC providers (optional)
+  PERSONA_API_KEY?: string;
+  PERSONA_TEMPLATE_ID?: string;
+  PERSONA_WEBHOOK_SECRET?: string;
+  SUMSUB_APP_TOKEN?: string;
+  SUMSUB_SECRET_KEY?: string;
+  SUMSUB_WEBHOOK_SECRET?: string;
+  // Notification providers (optional)
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  EXPO_ACCESS_TOKEN?: string;
 }
 
 /**
@@ -44,4 +62,3 @@ export interface PrivyClaims {
   issuedAt: number;
   expiration: number;
 }
-
