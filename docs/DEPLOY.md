@@ -8,8 +8,7 @@ Before starting, you'll need:
 
 - [ ] Node.js 18+ and pnpm 9+
 - [ ] A [Privy](https://privy.io) account
-- [ ] A [Cloudflare](https://cloudflare.com) account
-- [ ] A [Vercel](https://vercel.com) account (or similar for frontend)
+- [ ] A [Cloudflare](https://cloudflare.com) account (for both API and frontend)
 - [ ] Base Sepolia testnet ETH for gas
 
 ## Step 1: Clone and Install
@@ -121,27 +120,40 @@ NEXT_PUBLIC_API_URL=https://stashtab-api.your-subdomain.workers.dev
 NEXT_PUBLIC_CHAIN_ID=84532
 ```
 
-## Step 5: Deploy Frontend
+## Step 5: Deploy Frontend (Cloudflare Pages)
 
-### Option A: Vercel (Recommended)
+### Option A: Dashboard (Recommended)
 
 1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com)
-3. Import your repository
-4. Set the root directory to `apps/web`
-5. Add environment variables:
+2. Go to [Cloudflare Dashboard](https://dash.cloudflare.com) > Workers & Pages
+3. Click "Create" > "Pages" > "Connect to Git"
+4. Select your repository
+5. Configure build settings:
+   - **Framework preset**: Next.js
+   - **Build command**: `cd apps/web && pnpm install && pnpm build`
+   - **Build output directory**: `apps/web/.next`
+   - **Root directory**: `/` (leave as root)
+6. Add environment variables:
    - `NEXT_PUBLIC_PRIVY_APP_ID`
    - `NEXT_PUBLIC_API_URL`
    - `NEXT_PUBLIC_CHAIN_ID`
-6. Deploy
+7. Click "Save and Deploy"
 
-### Option B: Manual Deploy
+### Option B: Wrangler CLI
 
 ```bash
 cd apps/web
+
+# Build the Next.js app
 pnpm build
-# Deploy the .next folder to your hosting provider
+
+# Deploy to Cloudflare Pages
+npx wrangler pages deploy .next --project-name=stashtab-web
 ```
+
+### Option C: Git Integration (CI/CD)
+
+Once connected via the dashboard, every push to `main` will automatically deploy.
 
 ## Step 6: Configure Privy Allowed Origins
 
@@ -200,6 +212,7 @@ For mainnet deployment, update:
 ### Cloudflare Analytics
 
 View API metrics in Cloudflare dashboard:
+
 - Request count and latency
 - Error rates
 - Geographic distribution
@@ -207,16 +220,19 @@ View API metrics in Cloudflare dashboard:
 ### Custom Logging
 
 Add structured logging to track:
+
 - User signups
 - Transaction volumes
 - Error patterns
 
 ```typescript
-console.log(JSON.stringify({
-  event: 'user_signup',
-  userId: user.id,
-  timestamp: Date.now(),
-}));
+console.log(
+  JSON.stringify({
+    event: 'user_signup',
+    userId: user.id,
+    timestamp: Date.now(),
+  })
+);
 ```
 
 ## Updating
@@ -234,8 +250,7 @@ pnpm install
 cd apps/api
 npx wrangler deploy
 
-# Redeploy frontend
+# Redeploy frontend (if using Git integration, just push to main)
 cd ../web
-# Push to trigger Vercel deploy, or rebuild manually
+npx wrangler pages deploy .next --project-name=stashtab-web
 ```
-

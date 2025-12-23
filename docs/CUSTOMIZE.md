@@ -44,6 +44,7 @@ theme: {
 ```
 
 To change the accent color:
+
 1. Pick your color (e.g., blue `#3b82f6`)
 2. Generate light/dark variants
 3. Update the `yield` color object
@@ -58,6 +59,7 @@ Fonts are imported in `apps/web/src/app/globals.css`:
 ```
 
 To change fonts:
+
 1. Choose fonts from Google Fonts or your source
 2. Update the import URL
 3. Update `tailwind.config.js` font families:
@@ -72,6 +74,7 @@ fontFamily: {
 ### Logo
 
 Replace the logo component in:
+
 - `apps/web/src/components/Sidebar.tsx`
 - `apps/web/src/app/page.tsx`
 - `apps/web/src/app/login/page.tsx`
@@ -184,6 +187,7 @@ CREATE TABLE rewards (
 ```
 
 Apply with:
+
 ```bash
 npx wrangler d1 execute stashtab-db --file=migrations/0002_rewards.sql
 ```
@@ -200,7 +204,7 @@ export class CompoundService {
   async supply(amount: bigint): Promise<Hash> {
     // Implement Compound supply
   }
-  
+
   async withdraw(amount: bigint): Promise<Hash> {
     // Implement Compound withdraw
   }
@@ -215,8 +219,12 @@ Add chain configurations to `packages/config/src/`:
 // packages/config/src/addresses.ts
 export const ADDRESSES = {
   // Base
-  8453: { /* ... */ },
-  84532: { /* ... */ },
+  8453: {
+    /* ... */
+  },
+  84532: {
+    /* ... */
+  },
   // Optimism
   10: {
     USDC: '0x...',
@@ -249,6 +257,7 @@ npx wrangler secret put CUSTOM_API_KEY
 ```
 
 Access in code:
+
 ```typescript
 const apiKey = c.env.CUSTOM_API_KEY;
 ```
@@ -305,16 +314,26 @@ yield: {
 ### Self-Hosted API
 
 Instead of Cloudflare Workers, deploy the API to:
+
 - Your own Node.js server
 - AWS Lambda
 - Google Cloud Functions
 
 You'll need to adapt the database layer (replace D1 with PostgreSQL, etc.)
 
+### Alternative Frontend Hosting
+
+Instead of Cloudflare Pages, deploy the frontend to:
+
+- Vercel
+- Netlify
+- AWS Amplify
+
+Update the build commands accordingly in your hosting provider's settings.
+
 ### Custom Domain
 
-1. Add domain to Vercel/Cloudflare
-2. Update CORS origins in API
-3. Update `NEXT_PUBLIC_API_URL`
-4. Update Privy allowed origins
-
+1. Add domain to Cloudflare Pages (Settings > Custom domains)
+2. Update CORS origins in API (`apps/api/src/index.ts`)
+3. Update `NEXT_PUBLIC_API_URL` environment variable
+4. Update Privy allowed origins in Privy dashboard

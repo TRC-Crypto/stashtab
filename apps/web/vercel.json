@@ -1,7 +1,0 @@
-{
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@stashtab/web",
-  "installCommand": "cd ../.. && pnpm install",
-  "framework": "nextjs",
-  "outputDirectory": ".next"
-}
-
