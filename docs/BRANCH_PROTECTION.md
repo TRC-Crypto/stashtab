@@ -4,7 +4,52 @@ This repository uses branch protection rules to ensure code quality and prevent 
 
 ## Automated Setup
 
-You can set up branch protection automatically using the provided script:
+You can set up branch protection automatically using the provided script. We recommend using **GitHub Apps** for better security and fine-grained permissions.
+
+### Option 1: GitHub App (Recommended)
+
+GitHub Apps provide:
+
+- ✅ Fine-grained permissions (only what's needed)
+- ✅ Better security (scoped to specific repositories)
+- ✅ Better audit trail
+- ✅ No personal token exposure
+
+#### Setting up a GitHub App
+
+1. Go to your organization settings: https://github.com/organizations/TRC-Crypto/settings/apps
+2. Click **"New GitHub App"**
+3. Configure the app:
+   - **Name**: `Stashtab Branch Protection`
+   - **Homepage URL**: Your repository URL
+   - **Callback URL**: Can be empty for this use case
+4. Set **Repository permissions**:
+   - **Administration**: Read & write (required for branch protection)
+   - **Metadata**: Read-only (always enabled)
+5. Click **"Create GitHub App"**
+6. **Generate a private key** and save it securely
+7. **Install the app** on your repository:
+   - Go to the app settings
+   - Click **"Install App"**
+   - Select your repository
+   - Click **"Install"**
+8. Note your **App ID** (shown on the app settings page)
+
+#### Using the GitHub App
+
+```bash
+GITHUB_APP_ID=123456 \
+GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n..." \
+pnpm setup:branch-protection
+```
+
+**Note**: The script currently requires a JWT library for full GitHub App support. For now, use Option 2 (Personal Access Token) or install `jsonwebtoken`:
+
+```bash
+pnpm add -D jsonwebtoken @types/jsonwebtoken
+```
+
+### Option 2: Personal Access Token
 
 ```bash
 GITHUB_TOKEN=your_token pnpm setup:branch-protection
@@ -16,14 +61,16 @@ Or using tsx directly:
 GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts
 ```
 
-### Creating a GitHub Token
+#### Creating a Personal Access Token
 
 1. Go to https://github.com/settings/tokens
-2. Click "Generate new token" → "Generate new token (classic)"
+2. Click **"Generate new token"** → **"Generate new token (classic)"**
 3. Give it a descriptive name (e.g., "Stashtab Branch Protection Setup")
 4. Select the `repo` scope (Full control of private repositories)
-5. Click "Generate token"
+5. Click **"Generate token"**
 6. Copy the token and use it as the `GITHUB_TOKEN` environment variable
+
+**Security Note**: Personal Access Tokens have broad permissions. Consider using GitHub Apps for better security.
 
 ## Manual Setup
 

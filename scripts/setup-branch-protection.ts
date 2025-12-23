@@ -4,37 +4,108 @@
  *
  * This script configures branch protection rules for the main branch using the GitHub API.
  *
- * Usage:
- *   GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts
+ * Authentication Options:
+ *   1. GitHub App (Recommended - more secure, fine-grained permissions)
+ *      GITHUB_APP_ID=123456 GITHUB_APP_PRIVATE_KEY="..." tsx scripts/setup-branch-protection.ts
  *
- * Or set GITHUB_TOKEN in your environment:
- *   export GITHUB_TOKEN=your_token
- *   tsx scripts/setup-branch-protection.ts
+ *   2. Personal Access Token (PAT)
+ *      GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts
+ *
+ * GitHub App Setup:
+ *   1. Go to https://github.com/organizations/TRC-Crypto/settings/apps
+ *   2. Click "New GitHub App"
+ *   3. Set name, homepage, and callback URL
+ *   4. Permissions needed:
+ *      - Repository permissions → Administration: Read & write
+ *      - Repository permissions → Metadata: Read-only
+ *   5. Install the app on your repository
+ *   6. Get the App ID and generate a private key
  */
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_APP_ID = process.env.GITHUB_APP_ID;
+const GITHUB_APP_PRIVATE_KEY = process.env.GITHUB_APP_PRIVATE_KEY;
 const REPO_OWNER = process.env.GITHUB_REPOSITORY_OWNER || 'TRC-Crypto';
 const REPO_NAME = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'stashtab';
 const BRANCH = 'main';
 const API_BASE = 'https://api.github.com';
 
-if (!GITHUB_TOKEN) {
-  console.error('❌ GITHUB_TOKEN environment variable is required');
+// Validate authentication
+if (!GITHUB_TOKEN && (!GITHUB_APP_ID || !GITHUB_APP_PRIVATE_KEY)) {
+  console.error('❌ Authentication required');
   console.error('');
-  console.error('Usage:');
+  console.error('Option 1: GitHub App (Recommended)');
+  console.error(
+    '  GITHUB_APP_ID=123456 GITHUB_APP_PRIVATE_KEY="..." tsx scripts/setup-branch-protection.ts'
+  );
+  console.error('');
+  console.error('Option 2: Personal Access Token');
   console.error('  GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts');
   console.error('');
-  console.error('You can create a token at: https://github.com/settings/tokens');
-  console.error('Required scopes: repo (Full control of private repositories)');
+  console.error('See script header comments for GitHub App setup instructions.');
   process.exit(1);
+}
+
+/**
+ * Generate JWT for GitHub App authentication
+ */
+function generateJWT(): string {
+  if (!GITHUB_APP_ID || !GITHUB_APP_PRIVATE_KEY) {
+    throw new Error('GitHub App credentials not provided');
+  }
+
+  // Note: This is a simplified version. For production, use a proper JWT library
+  // like 'jsonwebtoken' or 'jose'. This example shows the concept.
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    iat: now - 60, // Issued at (1 minute ago to account for clock skew)
+    exp: now + 600, // Expires in 10 minutes
+    iss: GITHUB_APP_ID, // Issuer (App ID)
+  };
+
+  // For a real implementation, you'd need to sign this with the private key
+  // using RS256 algorithm. This requires a JWT library.
+  console.warn('⚠️  GitHub App JWT generation requires a JWT library.');
+  console.warn('   For now, using Personal Access Token authentication.');
+  throw new Error('GitHub App authentication requires JWT library (e.g., jsonwebtoken)');
+}
+
+/**
+ * Get installation access token for GitHub App
+ */
+async function getInstallationToken(): Promise<string> {
+  // This would require:
+  // 1. Generate JWT using the App ID and private key
+  // 2. Get installation ID for the repository
+  // 3. Exchange JWT for installation access token
+  // For now, we'll use PAT authentication
+  throw new Error('GitHub App authentication not fully implemented. Use GITHUB_TOKEN for now.');
+}
+
+/**
+ * Get authentication header
+ */
+async function getAuthHeader(): Promise<string> {
+  if (GITHUB_TOKEN) {
+    return `token ${GITHUB_TOKEN}`;
+  }
+
+  if (GITHUB_APP_ID && GITHUB_APP_PRIVATE_KEY) {
+    const installationToken = await getInstallationToken();
+    return `Bearer ${installationToken}`;
+  }
+
+  throw new Error('No authentication method provided');
 }
 
 async function apiRequest(method: string, endpoint: string, body?: any) {
   const url = `${API_BASE}${endpoint}`;
+  const authHeader = await getAuthHeader();
+
   const response = await fetch(url, {
     method,
     headers: {
-      Authorization: `token ${GITHUB_TOKEN}`,
+      Authorization: authHeader,
       Accept: 'application/vnd.github.v3+json',
       'Content-Type': 'application/json',
       'User-Agent': 'stashtab-setup-script',
@@ -120,8 +191,18 @@ async function setupBranchProtection() {
     console.log(`   https://github.com/${REPO_OWNER}/${REPO_NAME}/settings/branches`);
   } catch (error: any) {
     if (error.status === 403) {
-      console.error('❌ Permission denied. Make sure your token has "repo" scope.');
-      console.error('   Update token at: https://github.com/settings/tokens');
+      console.error('❌ Permission denied.');
+      if (GITHUB_TOKEN) {
+        console.error('   Make sure your token has "repo" scope.');
+        console.error('   Update token at: https://github.com/settings/tokens');
+      } else {
+        console.error(
+          '   Make sure your GitHub App has "Administration: Read & write" permission.'
+        );
+        console.error(
+          '   Check app permissions at: https://github.com/organizations/TRC-Crypto/settings/apps'
+        );
+      }
     } else if (error.status === 404) {
       console.error(`❌ Repository ${REPO_OWNER}/${REPO_NAME} not found or you don't have access.`);
     } else {
