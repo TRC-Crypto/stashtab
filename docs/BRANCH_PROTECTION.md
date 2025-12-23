@@ -49,11 +49,22 @@ If you prefer to set up branch protection manually:
     - `CI / Test`
     - `CI / Type Check`
 
-**Important**: Status checks will only appear in the dropdown after they have run successfully at least once on the `main` branch. If you don't see the checks:
+**Important**: Status checks will only appear in the dropdown after they have run successfully. GitHub sometimes requires checks to run on a **pull request** (not just pushes) before they appear. If you don't see the checks:
 
-1. Wait for the current CI workflow run to complete successfully
-2. Or push a commit to `main` to trigger the workflow
-3. Once the checks pass, they will appear in the branch protection settings
+1. **Create a test pull request** targeting `main`:
+   - Create a new branch: `git checkout -b test/trigger-checks`
+   - Make a small change (e.g., add a comment)
+   - Push and create a PR: `git push origin test/trigger-checks`
+   - Wait for all CI checks to pass on the PR
+   - The checks should now appear in branch protection settings
+
+2. **Alternative**: Wait for the next PR to be created - checks will appear after they run successfully
+
+3. **If checks still don't appear**:
+   - Wait 5-10 minutes (GitHub can take time to update)
+   - Refresh the branch protection settings page
+   - Check that the workflow file is in `.github/workflows/ci.yml`
+   - Verify the workflow has run successfully in the Actions tab
 
 - **Require conversation resolution before merging**: ✅ Enabled
 - **Do not allow bypassing the above settings**: ✅ Enabled (enforce for administrators)
