@@ -15,11 +15,9 @@ Fork it. Deploy it. Make it yours.
 - **Send Anywhere** - Transfer to other users instantly or withdraw to any Ethereum address.
 - **Smart Accounts** - Each user gets a Safe smart account for secure, programmable transactions.
 
-## Demo
+## Getting Test Funds
 
-Try the testnet demo at [stashtab.dev](https://stashtab.dev) (Base Sepolia).
-
-Get test USDC from the [Circle Faucet](https://faucet.circle.com/).
+For testing on Base Sepolia, get test USDC from the [Circle Faucet](https://faucet.circle.com/).
 
 ## Quick Start
 
@@ -40,17 +38,17 @@ pnpm install
 
 ### 2. Configure Environment
 
-Copy `.env.example` to `.env` and fill in your values:
+Copy the example environment files:
 
 ```bash
-# Privy (get from https://dashboard.privy.io)
-NEXT_PUBLIC_PRIVY_APP_ID=your-privy-app-id
-PRIVY_APP_SECRET=your-privy-secret
+# Frontend
+cp apps/web/.env.example apps/web/.env.local
 
-# Chain (84532 = Base Sepolia testnet)
-NEXT_PUBLIC_CHAIN_ID=84532
-RPC_URL=https://sepolia.base.org
+# API (for local development)
+cp apps/api/.dev.vars.example apps/api/.dev.vars
 ```
+
+Fill in your values (get Privy credentials from [dashboard.privy.io](https://dashboard.privy.io)).
 
 ### 3. Start Development
 
@@ -95,15 +93,15 @@ See [docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step deployment instructions.
 
 ## Tech Stack
 
-| Layer | Technology | Why |
-|-------|------------|-----|
-| Chain | Base | Low fees, Coinbase ecosystem, mainstream-friendly |
-| Yield | Aave v3 | Battle-tested, deep liquidity, simple integration |
-| Stablecoin | USDC | Regulatory clarity, wide acceptance |
-| Smart Account | Safe | Industry standard, modular, audited |
-| Auth | Privy | Social login, embedded wallets, recovery built-in |
-| Backend | Cloudflare Workers | Free tier, global edge, simple deploys |
-| Frontend | Next.js 14 | Fast, familiar, easy to customize |
+| Layer         | Technology         | Why                                               |
+| ------------- | ------------------ | ------------------------------------------------- |
+| Chain         | Base               | Low fees, Coinbase ecosystem, mainstream-friendly |
+| Yield         | Aave v3            | Battle-tested, deep liquidity, simple integration |
+| Stablecoin    | USDC               | Regulatory clarity, wide acceptance               |
+| Smart Account | Safe               | Industry standard, modular, audited               |
+| Auth          | Privy              | Social login, embedded wallets, recovery built-in |
+| Backend       | Cloudflare Workers | Free tier, global edge, simple deploys            |
+| Frontend      | Next.js 14         | Fast, familiar, easy to customize                 |
 
 ## Documentation
 
@@ -117,11 +115,12 @@ See [docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step deployment instructions.
 ```
 stashtab/
 ├── apps/
-│   ├── web/              # Next.js frontend
+│   ├── web/              # Next.js frontend (Cloudflare Pages)
 │   └── api/              # Cloudflare Workers backend
 ├── packages/
 │   ├── sdk/              # Core SDK (Safe, Aave, Privy)
-│   └── config/           # Shared ABIs, addresses, constants
+│   ├── config/           # Shared ABIs, addresses, constants
+│   └── eslint-config/    # Shared ESLint configurations
 ├── docs/                 # Documentation
 ├── turbo.json            # Turborepo config
 └── package.json          # Root package.json
@@ -138,4 +137,3 @@ MIT - See [LICENSE](LICENSE) for details.
 ---
 
 **No token. No VC. No waitlist. Just code.**
-
