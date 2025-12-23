@@ -2,6 +2,8 @@
 
 This repository uses branch protection rules to ensure code quality and prevent accidental changes to the main branch.
 
+> 📖 **New to GitHub Apps?** See [GITHUB_APP_SETUP.md](./GITHUB_APP_SETUP.md) for detailed step-by-step instructions on creating and configuring a GitHub App.
+
 ## Automated Setup
 
 You can set up branch protection automatically using the provided script. We recommend using **GitHub Apps** for better security and fine-grained permissions.
