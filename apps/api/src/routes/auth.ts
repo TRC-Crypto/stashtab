@@ -1,9 +1,8 @@
-import { Hono } from 'hono';
 import { PrivyClient } from '@privy-io/server-auth';
+import { getChain } from '@stashtab/config';
+import { Hono } from 'hono';
+import type { Address } from 'viem';
 import type { Env, User } from '../types';
-import { createPublicClient, createWalletClient, http, type Address } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
-import { getChain, getAddresses } from '@stashtab/config';
 
 const authRoutes = new Hono<{ Bindings: Env }>();
 
@@ -29,12 +28,10 @@ authRoutes.post('/signup', async (c) => {
     }
 
     // Check if user already exists
-    const existingResult = await c.env.DB.prepare(
-      'SELECT * FROM users WHERE privy_user_id = ?'
-    )
+    const existingResult = await c.env.DB.prepare('SELECT * FROM users WHERE privy_user_id = ?')
       .bind(claims.userId)
       .first();
-    
+
     const existingUser = existingResult as User | null;
 
     if (existingUser) {
@@ -60,7 +57,6 @@ authRoutes.post('/signup', async (c) => {
     // For now, we'll predict the Safe address without deploying
     // In production, you'd deploy the Safe here using a server wallet
     const chainId = parseInt(c.env.CHAIN_ID);
-    const addresses = getAddresses(chainId);
 
     // Generate a deterministic Safe address based on owner
     // This is a simplified version - real implementation would use Safe SDK
@@ -84,7 +80,10 @@ authRoutes.post('/signup', async (c) => {
   } catch (err) {
     console.error('Signup error:', err);
     return c.json(
-      { error: 'Authentication failed', message: err instanceof Error ? err.message : 'Unknown error' },
+      {
+        error: 'Authentication failed',
+        message: err instanceof Error ? err.message : 'Unknown error',
+      },
       401
     );
   }
@@ -97,17 +96,14 @@ authRoutes.post('/signup', async (c) => {
 async function predictSafeAddress(
   owner: Address,
   chainId: number,
-  rpcUrl: string
+  _rpcUrl: string
 ): Promise<Address> {
   // In a real implementation, this would use the Safe SDK to predict
   // the address based on the proxy factory and singleton
   // For demo purposes, we'll generate a deterministic address
 
-  const chain = getChain(chainId);
-  const publicClient = createPublicClient({
-    chain,
-    transport: http(rpcUrl),
-  });
+  // Ensure we reference getChain for chain validation
+  const _chain = getChain(chainId);
 
   // Create a deterministic "Safe-like" address by hashing owner + salt
   // This is a placeholder - real implementation would calculate actual Safe address
@@ -124,4 +120,3 @@ async function predictSafeAddress(
 }
 
 export { authRoutes };
-

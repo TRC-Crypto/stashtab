@@ -35,9 +35,7 @@ export default function LoginPage() {
         {/* Login Card */}
         <div className="glass rounded-2xl p-8">
           <h1 className="text-2xl font-bold text-white text-center mb-2">Welcome back</h1>
-          <p className="text-zinc-400 text-center mb-8">
-            Sign in to access your account
-          </p>
+          <p className="text-zinc-400 text-center mb-8">Sign in to access your account</p>
 
           <button
             onClick={login}
@@ -48,7 +46,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-zinc-500 text-sm text-center mt-6">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button onClick={login} className="text-yield hover:text-yield-light transition-colors">
               Sign up
             </button>
@@ -57,10 +55,10 @@ export default function LoginPage() {
 
         {/* Security Note */}
         <p className="text-zinc-600 text-xs text-center mt-6 max-w-sm mx-auto">
-          By signing in, you agree to our Terms of Service. This is testnet software—do not use real funds.
+          By signing in, you agree to our Terms of Service. This is testnet software—do not use real
+          funds.
         </p>
       </motion.div>
     </div>
   );
 }
-

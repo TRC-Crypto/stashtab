@@ -1,3 +1,4 @@
+import { getChain, getRpcUrl } from '@stashtab/config';
 import {
   createPublicClient,
   createWalletClient,
@@ -8,7 +9,6 @@ import {
   type WalletClient,
   type HttpTransport,
 } from 'viem';
-import { getChain, getRpcUrl } from '@stashtab/config';
 
 export type StashtabPublicClient = PublicClient<HttpTransport, Chain>;
 export type StashtabWalletClient = WalletClient<HttpTransport, Chain, Account>;
@@ -43,4 +43,3 @@ export function createStashtabWalletClient(
     account,
   });
 }
-

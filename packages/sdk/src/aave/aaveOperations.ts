@@ -1,4 +1,3 @@
-import type { Address } from 'viem';
 import {
   getAddresses,
   AAVE_POOL_ABI,
@@ -6,6 +5,7 @@ import {
   ERC20_ABI,
   rayToPercent,
 } from '@stashtab/config';
+import type { Address } from 'viem';
 import type { StashtabPublicClient } from '../client';
 import type { YieldRate } from '../types';
 
@@ -117,4 +117,3 @@ export async function getUSDCBalance(
     args: [address],
   });
 }
-

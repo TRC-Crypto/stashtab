@@ -1,4 +1,4 @@
-import type { Address, Hash, Hex } from 'viem';
+import type { Address, Hex } from 'viem';
 
 export interface SafeTransactionData {
   to: Address;
@@ -25,4 +25,3 @@ export interface EncodedSafeTransaction {
   refundReceiver: Address;
   nonce: bigint;
 }
-

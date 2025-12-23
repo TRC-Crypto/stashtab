@@ -1,3 +1,4 @@
+import { getAddresses } from '@stashtab/config';
 import {
   type Address,
   type Hash,
@@ -9,7 +10,6 @@ import {
   getContractAddress,
   zeroAddress,
 } from 'viem';
-import { getAddresses } from '@stashtab/config';
 import type { StashtabPublicClient, StashtabWalletClient } from '../client';
 import type { SafeConfig, SafeTransactionData } from './types';
 
@@ -316,4 +316,3 @@ export async function getSafeOwners(
     functionName: 'getOwners',
   })) as Address[];
 }
-

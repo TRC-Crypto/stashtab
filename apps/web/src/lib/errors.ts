@@ -28,7 +28,10 @@ export class InsufficientBalanceError extends StashtabError {
 }
 
 export class TransactionError extends StashtabError {
-  constructor(message = 'Transaction failed', public txHash?: string) {
+  constructor(
+    message = 'Transaction failed',
+    public txHash?: string
+  ) {
     super(message, 'TX_FAILED', 500);
     this.name = 'TransactionError';
   }
@@ -44,7 +47,10 @@ export class NetworkError extends StashtabError {
 /**
  * Parse API error response
  */
-export function parseApiError(response: Response, data: any): StashtabError {
+export function parseApiError(
+  response: Response,
+  data: { message?: string; error?: string }
+): StashtabError {
   const message = data?.message || data?.error || 'An error occurred';
 
   switch (response.status) {
@@ -95,4 +101,3 @@ export function getErrorMessage(error: unknown): string {
 
   return 'An unexpected error occurred';
 }
-

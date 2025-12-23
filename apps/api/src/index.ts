@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { authRoutes } from './routes/auth';
 import { accountRoutes } from './routes/account';
+import { authRoutes } from './routes/auth';
 import { yieldRoutes } from './routes/yield';
 import type { Env } from './types';
 
@@ -50,4 +50,3 @@ app.onError((err, c) => {
 });
 
 export default app;
-

@@ -1,14 +1,8 @@
+import { getAddresses, formatUSDC, SECONDS_PER_YEAR } from '@stashtab/config';
 import type { Address } from 'viem';
-import { getAddresses, formatUSDC, SECONDS_PER_YEAR, RAY } from '@stashtab/config';
 import type { StashtabPublicClient } from '../client';
 import type { UserBalance, YieldRate } from '../types';
-import {
-  getAaveUserPosition,
-  getAaveReserveData,
-  getCurrentAPY,
-  getATokenBalance,
-  getUSDCBalance,
-} from './aaveOperations';
+import { getCurrentAPY, getATokenBalance, getUSDCBalance } from './aaveOperations';
 
 /**
  * Service for interacting with Aave v3 protocol
@@ -86,4 +80,3 @@ export class AaveService {
     return formatUSDC(amount, showDecimals);
   }
 }
-

@@ -7,7 +7,7 @@ import { useAccount } from '@/hooks/useAccount';
 import { formatUSDC, parseUSDC } from '@stashtab/config';
 
 export default function SendPage() {
-  const { balance, send, isLoading } = useAccount();
+  const { balance, send } = useAccount();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -47,11 +47,7 @@ export default function SendPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Send</h1>
         <p className="text-zinc-400">Transfer USDC to any address</p>
       </motion.div>
@@ -129,4 +125,3 @@ export default function SendPage() {
     </div>
   );
 }
-

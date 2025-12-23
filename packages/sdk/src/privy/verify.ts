@@ -19,9 +19,9 @@ export interface PrivyUser {
  * @param appId - Your Privy app ID
  */
 export async function verifyPrivyToken(
-  token: string,
-  appSecret: string,
-  appId: string
+  _token: string,
+  _appSecret: string,
+  _appId: string
 ): Promise<PrivyUser | null> {
   // This is a placeholder - actual implementation uses @privy-io/server-auth
   // The real verification happens in the API using the Privy server SDK
@@ -40,4 +40,3 @@ export async function verifyPrivyToken(
 export function getWalletFromPrivyUser(user: PrivyUser): Address | null {
   return user.walletAddress ?? null;
 }
-

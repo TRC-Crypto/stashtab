@@ -7,7 +7,7 @@ import { useAccount } from '@/hooks/useAccount';
 import { formatUSDC, parseUSDC } from '@stashtab/config';
 
 export default function WithdrawPage() {
-  const { balance, withdraw, isLoading } = useAccount();
+  const { balance, withdraw } = useAccount();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
@@ -47,11 +47,7 @@ export default function WithdrawPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Withdraw</h1>
         <p className="text-zinc-400">Withdraw your USDC to an external wallet</p>
       </motion.div>
@@ -65,9 +61,7 @@ export default function WithdrawPage() {
         {/* Balance Info */}
         <div className="mb-6 p-4 rounded-xl bg-surface-100">
           <p className="text-zinc-400 text-sm mb-1">Available to withdraw</p>
-          <p className="text-2xl font-bold text-white font-mono">
-            ${formatUSDC(availableBalance)}
-          </p>
+          <p className="text-2xl font-bold text-white font-mono">${formatUSDC(availableBalance)}</p>
         </div>
 
         {/* Amount Input */}
@@ -152,4 +146,3 @@ export default function WithdrawPage() {
     </div>
   );
 }
-

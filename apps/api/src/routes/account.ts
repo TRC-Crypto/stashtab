@@ -1,21 +1,13 @@
-import { Hono } from 'hono';
 import { PrivyClient } from '@privy-io/server-auth';
+import { getChain, getAddresses, ERC20_ABI, AAVE_POOL_ABI, rayToPercent } from '@stashtab/config';
+import { Hono, type Context } from 'hono';
 import { createPublicClient, http, type Address } from 'viem';
 import type { Env, User } from '../types';
-import {
-  getChain,
-  getAddresses,
-  formatUSDC,
-  ERC20_ABI,
-  AAVE_POOL_ABI,
-  AAVE_DATA_PROVIDER_ABI,
-  rayToPercent,
-} from '@stashtab/config';
 
 const accountRoutes = new Hono<{ Bindings: Env }>();
 
 // Middleware to verify auth and get user
-async function getAuthenticatedUser(c: any): Promise<User | null> {
+async function getAuthenticatedUser(c: Context<{ Bindings: Env }>): Promise<User | null> {
   const authHeader = c.req.header('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return null;
@@ -176,7 +168,7 @@ accountRoutes.post('/deposit', async (c) => {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  const body = await c.req.json<{ amount?: string }>();
+  const _body = await c.req.json<{ amount?: string }>();
 
   // In production, this would:
   // 1. Check Safe USDC balance
@@ -270,4 +262,3 @@ accountRoutes.post('/withdraw', async (c) => {
 });
 
 export { accountRoutes };
-

@@ -1,7 +1,7 @@
+import { getChain, getAddresses, AAVE_POOL_ABI, rayToPercent } from '@stashtab/config';
 import { Hono } from 'hono';
 import { createPublicClient, http } from 'viem';
 import type { Env } from '../types';
-import { getChain, getAddresses, AAVE_POOL_ABI, rayToPercent } from '@stashtab/config';
 
 const yieldRoutes = new Hono<{ Bindings: Env }>();
 
@@ -66,4 +66,3 @@ yieldRoutes.get('/history', async (c) => {
 });
 
 export { yieldRoutes };
-

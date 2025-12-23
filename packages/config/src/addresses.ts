@@ -1,4 +1,4 @@
-import { type Address } from 'viem';
+import type { Address } from 'viem';
 
 /**
  * Contract addresses for Stashtab on supported chains
@@ -47,4 +47,3 @@ export function getAddresses(chainId: number) {
   }
   return ADDRESSES[chainId as SupportedChainId];
 }
-

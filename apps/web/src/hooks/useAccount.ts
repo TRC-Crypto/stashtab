@@ -16,7 +16,7 @@ interface AccountState {
 }
 
 export function useAccount() {
-  const { user, authenticated, getAccessToken } = usePrivy();
+  const { authenticated, getAccessToken } = usePrivy();
   const [state, setState] = useState<AccountState>({
     safeAddress: null,
     balance: null,
@@ -34,7 +34,7 @@ export function useAccount() {
 
     try {
       const token = await getAccessToken();
-      
+
       const response = await fetch(`${API_URL}/account`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ export function useAccount() {
       }
 
       const data = await response.json();
-      
+
       setState({
         safeAddress: data.safeAddress,
         balance: data.balance,
@@ -69,7 +69,7 @@ export function useAccount() {
 
     try {
       const token = await getAccessToken();
-      
+
       const response = await fetch(`${API_URL}/account/balance`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ export function useAccount() {
       }
 
       const data = await response.json();
-      
+
       setState((prev) => ({
         ...prev,
         balance: data.balance,
@@ -98,7 +98,7 @@ export function useAccount() {
       if (!authenticated) throw new Error('Not authenticated');
 
       const token = await getAccessToken();
-      
+
       const response = await fetch(`${API_URL}/account/send`, {
         method: 'POST',
         headers: {
@@ -127,7 +127,7 @@ export function useAccount() {
       if (!authenticated) throw new Error('Not authenticated');
 
       const token = await getAccessToken();
-      
+
       const response = await fetch(`${API_URL}/account/withdraw`, {
         method: 'POST',
         headers: {
@@ -171,4 +171,3 @@ export function useAccount() {
     refetch: fetchAccount,
   };
 }
-

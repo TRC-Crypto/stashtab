@@ -1,6 +1,6 @@
-import type { Address, Hash, Hex } from 'viem';
-import { encodeFunctionData } from 'viem';
 import { getAddresses, ERC20_ABI, AAVE_POOL_ABI, MAX_UINT256 } from '@stashtab/config';
+import type { Address, Hash } from 'viem';
+import { encodeFunctionData } from 'viem';
 import type { StashtabPublicClient, StashtabWalletClient } from '../client';
 import {
   predictSafeAddress,
@@ -166,4 +166,3 @@ export class SafeService {
     });
   }
 }
-
