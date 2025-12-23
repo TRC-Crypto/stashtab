@@ -26,8 +26,15 @@
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_APP_ID = process.env.GITHUB_APP_ID;
 const GITHUB_APP_PRIVATE_KEY = process.env.GITHUB_APP_PRIVATE_KEY;
-const REPO_OWNER = process.env.GITHUB_REPOSITORY_OWNER || 'TRC-Crypto';
-const REPO_NAME = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'stashtab';
+// Default to extracting from GITHUB_REPOSITORY or use environment variable
+// Format: owner/repo or just owner (will default repo to 'stashtab')
+const REPO_OWNER =
+  process.env.GITHUB_REPOSITORY_OWNER ||
+  process.env.GITHUB_REPOSITORY?.split('/')[0] ||
+  process.env.GITHUB_USERNAME ||
+  'your-username';
+const REPO_NAME =
+  process.env.GITHUB_REPOSITORY?.split('/')[1] || process.env.GITHUB_REPOSITORY_NAME || 'stashtab';
 const BRANCH = 'main';
 const API_BASE = 'https://api.github.com';
 
