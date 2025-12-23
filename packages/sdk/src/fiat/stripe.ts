@@ -22,10 +22,10 @@ import type {
   CreateOrderRequest,
   FiatCurrency,
   CryptoCurrency,
-} from "./types";
+} from './types';
 
 export class StripeOnRampService implements FiatService {
-  readonly name = "stripe";
+  readonly name = 'stripe';
   private config: FiatServiceConfig;
 
   constructor(config: FiatServiceConfig) {
@@ -44,7 +44,7 @@ export class StripeOnRampService implements FiatService {
 
     return {
       id: `quote_${Date.now()}`,
-      type: "on",
+      type: 'on',
       fiatCurrency: request.fiatCurrency,
       cryptoCurrency: request.cryptoCurrency,
       fiatAmount: request.amount,
@@ -66,12 +66,12 @@ export class StripeOnRampService implements FiatService {
     return {
       id: `order_${Date.now()}`,
       quoteId: request.quoteId,
-      status: "pending",
-      type: "on",
-      fiatCurrency: "USD",
-      cryptoCurrency: "USDC",
+      status: 'pending',
+      type: 'on',
+      fiatCurrency: 'USD',
+      cryptoCurrency: 'USDC',
       fiatAmount: 100,
-      cryptoAmount: "98.50",
+      cryptoAmount: '98.50',
       walletAddress: request.walletAddress,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -84,14 +84,14 @@ export class StripeOnRampService implements FiatService {
 
     return {
       id: orderId,
-      quoteId: "quote_stub",
-      status: "processing",
-      type: "on",
-      fiatCurrency: "USD",
-      cryptoCurrency: "USDC",
+      quoteId: 'quote_stub',
+      status: 'processing',
+      type: 'on',
+      fiatCurrency: 'USD',
+      cryptoCurrency: 'USDC',
       fiatAmount: 100,
-      cryptoAmount: "98.50",
-      walletAddress: "0x...",
+      cryptoAmount: '98.50',
+      walletAddress: '0x...',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -102,7 +102,7 @@ export class StripeOnRampService implements FiatService {
     const order = await this.getOrderStatus(orderId);
     return {
       ...order,
-      status: "cancelled",
+      status: 'cancelled',
       updatedAt: new Date(),
     };
   }
@@ -112,24 +112,25 @@ export class StripeOnRampService implements FiatService {
     // const session = await stripe.checkout.sessions.create({...});
     // return session.url;
 
-    const baseUrl = this.config.environment === "production"
-      ? "https://checkout.stripe.com"
-      : "https://checkout.stripe.com/test";
+    const baseUrl =
+      this.config.environment === 'production'
+        ? 'https://checkout.stripe.com'
+        : 'https://checkout.stripe.com/test';
 
     return `${baseUrl}/pay/${orderId}`;
   }
 
-  verifyWebhook(payload: string, signature: string): boolean {
+  verifyWebhook(_payload: string, _signature: string): boolean {
     // TODO: Implement with Stripe webhook verification
     // const event = stripe.webhooks.constructEvent(payload, signature, this.config.webhookSecret);
 
     if (!this.config.webhookSecret) {
-      console.warn("Webhook secret not configured");
+      console.warn('Webhook secret not configured');
       return false;
     }
 
     // Stub: always return true in development
-    return this.config.environment === "sandbox";
+    return this.config.environment === 'sandbox';
   }
 
   async getSupportedCurrencies(): Promise<{
@@ -137,12 +138,12 @@ export class StripeOnRampService implements FiatService {
     crypto: CryptoCurrency[];
   }> {
     return {
-      fiat: ["USD", "EUR", "GBP"],
-      crypto: ["USDC", "ETH"],
+      fiat: ['USD', 'EUR', 'GBP'],
+      crypto: ['USDC', 'ETH'],
     };
   }
 
-  async getLimits(currency: FiatCurrency): Promise<{
+  async getLimits(_currency: FiatCurrency): Promise<{
     min: number;
     max: number;
     daily: number;
@@ -165,13 +166,12 @@ export function createStripeService(config: {
   apiKey: string;
   secretKey: string;
   webhookSecret?: string;
-  environment?: "sandbox" | "production";
+  environment?: 'sandbox' | 'production';
 }): StripeOnRampService {
   return new StripeOnRampService({
     apiKey: config.apiKey,
     secretKey: config.secretKey,
     webhookSecret: config.webhookSecret,
-    environment: config.environment || "sandbox",
+    environment: config.environment || 'sandbox',
   });
 }
-

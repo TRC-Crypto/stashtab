@@ -1,9 +1,11 @@
-"use client";
+'use client';
+
+import type { ReactNode } from 'react';
 
 interface Column<T> {
   key: string;
   header: string;
-  render?: (item: T) => React.ReactNode;
+  render?: (item: T) => ReactNode;
   className?: string;
 }
 
@@ -15,12 +17,12 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends object>({
   columns,
   data,
   keyField,
   onRowClick,
-  emptyMessage = "No data available",
+  emptyMessage = 'No data available',
 }: DataTableProps<T>) {
   if (data.length === 0) {
     return (
@@ -39,7 +41,7 @@ export function DataTable<T extends Record<string, any>>({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className={`px-6 py-4 text-left text-sm font-medium text-zinc-400 ${column.className || ""}`}
+                  className={`px-6 py-4 text-left text-sm font-medium text-zinc-400 ${column.className || ''}`}
                 >
                   {column.header}
                 </th>
@@ -52,15 +54,14 @@ export function DataTable<T extends Record<string, any>>({
                 key={String(item[keyField])}
                 onClick={() => onRowClick?.(item)}
                 className={`border-b border-surface-300 last:border-0 ${
-                  onRowClick ? "cursor-pointer hover:bg-surface-200" : ""
+                  onRowClick ? 'cursor-pointer hover:bg-surface-200' : ''
                 }`}
               >
                 {columns.map((column) => (
-                  <td
-                    key={column.key}
-                    className={`px-6 py-4 text-sm ${column.className || ""}`}
-                  >
-                    {column.render ? column.render(item) : item[column.key]}
+                  <td key={column.key} className={`px-6 py-4 text-sm ${column.className || ''}`}>
+                    {column.render
+                      ? column.render(item)
+                      : String((item as Record<string, unknown>)[column.key] ?? '')}
                   </td>
                 ))}
               </tr>
@@ -71,4 +72,3 @@ export function DataTable<T extends Record<string, any>>({
     </div>
   );
 }
-

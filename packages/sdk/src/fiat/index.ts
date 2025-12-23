@@ -39,31 +39,41 @@
  * ```
  */
 
-export * from "./types";
-export { StripeOnRampService, createStripeService } from "./stripe";
-export { MoonPayService, createMoonPayService } from "./moonpay";
+export * from './types';
+export { StripeOnRampService, createStripeService } from './stripe';
+export { MoonPayService, createMoonPayService } from './moonpay';
+
+import { createMoonPayService } from './moonpay';
+import { createStripeService } from './stripe';
 
 /**
  * Factory function to create a fiat service by name
  */
 export function createFiatService(
-  provider: "stripe" | "moonpay",
+  provider: 'stripe' | 'moonpay',
   config: {
     apiKey: string;
     secretKey?: string;
     webhookSecret?: string;
-    environment?: "sandbox" | "production";
+    environment?: 'sandbox' | 'production';
   }
 ) {
   switch (provider) {
-    case "stripe":
-      const { createStripeService } = require("./stripe");
-      return createStripeService(config);
-    case "moonpay":
-      const { createMoonPayService } = require("./moonpay");
+    case 'stripe': {
+      if (!config.secretKey) {
+        throw new Error('Stripe requires a secretKey');
+      }
+      return createStripeService({
+        apiKey: config.apiKey,
+        secretKey: config.secretKey,
+        webhookSecret: config.webhookSecret,
+        environment: config.environment,
+      });
+    }
+    case 'moonpay': {
       return createMoonPayService(config);
+    }
     default:
       throw new Error(`Unknown fiat provider: ${provider}`);
   }
 }
-

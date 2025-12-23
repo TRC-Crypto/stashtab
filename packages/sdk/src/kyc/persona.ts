@@ -22,18 +22,19 @@ import type {
   UserIdentity,
   SanctionsCheckResult,
   WebhookEvent,
-} from "./types";
+} from './types';
 
 export class PersonaKYCService implements KYCService {
-  readonly name = "persona";
+  readonly name = 'persona';
   private config: KYCServiceConfig;
   private baseUrl: string;
 
   constructor(config: KYCServiceConfig) {
     this.config = config;
-    this.baseUrl = config.environment === "production"
-      ? "https://api.withpersona.com/api/v1"
-      : "https://api.withpersona.com/api/v1"; // Persona uses same URL with sandbox templates
+    this.baseUrl =
+      config.environment === 'production'
+        ? 'https://api.withpersona.com/api/v1'
+        : 'https://api.withpersona.com/api/v1'; // Persona uses same URL with sandbox templates
   }
 
   async createVerification(request: VerificationRequest): Promise<VerificationSession> {
@@ -60,7 +61,7 @@ export class PersonaKYCService implements KYCService {
     return {
       id: sessionId,
       userId: request.userId,
-      status: "pending",
+      status: 'pending',
       level: request.level,
       verificationUrl: `https://withpersona.com/verify?inquiry-id=${sessionId}`,
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
@@ -79,16 +80,16 @@ export class PersonaKYCService implements KYCService {
 
     return {
       id: verificationId,
-      userId: "user_123",
-      status: "pending",
-      level: "standard",
+      userId: 'user_123',
+      status: 'pending',
+      level: 'standard',
       documents: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
   }
 
-  async getUserVerification(userId: string): Promise<UserIdentity | null> {
+  async getUserVerification(_userId: string): Promise<UserIdentity | null> {
     // TODO: Implement with Persona API
     // Search for inquiries by reference-id
     // const response = await fetch(`${this.baseUrl}/inquiries?filter[reference-id]=${userId}`, {...});
@@ -102,16 +103,16 @@ export class PersonaKYCService implements KYCService {
 
     return {
       id: verificationId,
-      userId: "user_123",
-      status: "pending",
-      level: "standard",
+      userId: 'user_123',
+      status: 'pending',
+      level: 'standard',
       verificationUrl: `https://withpersona.com/verify?inquiry-id=${verificationId}`,
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       createdAt: new Date(),
     };
   }
 
-  async checkSanctions(params: {
+  async checkSanctions(_params: {
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
@@ -146,17 +147,17 @@ export class PersonaKYCService implements KYCService {
     return `https://withpersona.com/verify?inquiry-id=${verificationId}`;
   }
 
-  verifyWebhook(payload: string, signature: string): boolean {
+  verifyWebhook(_payload: string, _signature: string): boolean {
     // TODO: Implement Persona webhook verification
     // Persona uses HMAC-SHA256
 
     if (!this.config.webhookSecret) {
-      console.warn("Webhook secret not configured");
+      console.warn('Webhook secret not configured');
       return false;
     }
 
     // Stub: always return true in sandbox
-    return this.config.environment === "sandbox";
+    return this.config.environment === 'sandbox';
   }
 
   parseWebhook(payload: string): WebhookEvent {
@@ -164,26 +165,26 @@ export class PersonaKYCService implements KYCService {
 
     return {
       id: data.data?.id || `evt_${Date.now()}`,
-      type: data.data?.attributes?.status || "unknown",
-      userId: data.data?.attributes?.["reference-id"] || "",
-      verificationId: data.data?.id || "",
+      type: data.data?.attributes?.status || 'unknown',
+      userId: data.data?.attributes?.['reference-id'] || '',
+      verificationId: data.data?.id || '',
       status: this.mapPersonaStatus(data.data?.attributes?.status),
-      timestamp: new Date(data.data?.attributes?.["updated-at"] || Date.now()),
+      timestamp: new Date(data.data?.attributes?.['updated-at'] || Date.now()),
       data: data.data?.attributes || {},
     };
   }
 
-  private mapPersonaStatus(personaStatus: string): UserIdentity["status"] {
-    const statusMap: Record<string, UserIdentity["status"]> = {
-      created: "not_started",
-      pending: "pending",
-      completed: "in_review",
-      approved: "approved",
-      declined: "declined",
-      expired: "expired",
-      needs_review: "needs_review",
+  private mapPersonaStatus(personaStatus: string): UserIdentity['status'] {
+    const statusMap: Record<string, UserIdentity['status']> = {
+      created: 'not_started',
+      pending: 'pending',
+      completed: 'in_review',
+      approved: 'approved',
+      declined: 'declined',
+      expired: 'expired',
+      needs_review: 'needs_review',
     };
-    return statusMap[personaStatus] || "pending";
+    return statusMap[personaStatus] || 'pending';
   }
 }
 
@@ -194,13 +195,12 @@ export function createPersonaService(config: {
   apiKey: string;
   templateId: string;
   webhookSecret?: string;
-  environment?: "sandbox" | "production";
+  environment?: 'sandbox' | 'production';
 }): PersonaKYCService {
   return new PersonaKYCService({
     apiKey: config.apiKey,
     templateId: config.templateId,
     webhookSecret: config.webhookSecret,
-    environment: config.environment || "sandbox",
+    environment: config.environment || 'sandbox',
   });
 }
-

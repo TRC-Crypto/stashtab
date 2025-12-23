@@ -41,27 +41,30 @@
  * - enhanced: Full KYC with address verification
  */
 
-export * from "./types";
-export { PersonaKYCService, createPersonaService } from "./persona";
-export { SumsubKYCService, createSumsubService } from "./sumsub";
+export * from './types';
+export { PersonaKYCService, createPersonaService } from './persona';
+export { SumsubKYCService, createSumsubService } from './sumsub';
+
+import { createPersonaService } from './persona';
+import { createSumsubService } from './sumsub';
 
 /**
  * Factory function to create a KYC service by provider
  */
 export function createKYCService(
-  provider: "persona" | "sumsub",
+  provider: 'persona' | 'sumsub',
   config: {
     apiKey: string;
     secretKey?: string;
     templateId?: string;
     webhookSecret?: string;
-    environment?: "sandbox" | "production";
+    environment?: 'sandbox' | 'production';
   }
 ) {
   switch (provider) {
-    case "persona":
+    case 'persona':
       if (!config.templateId) {
-        throw new Error("Persona requires a templateId");
+        throw new Error('Persona requires a templateId');
       }
       return createPersonaService({
         apiKey: config.apiKey,
@@ -70,9 +73,9 @@ export function createKYCService(
         environment: config.environment,
       });
 
-    case "sumsub":
+    case 'sumsub':
       if (!config.secretKey) {
-        throw new Error("Sumsub requires a secretKey");
+        throw new Error('Sumsub requires a secretKey');
       }
       return createSumsubService({
         apiKey: config.apiKey,
@@ -89,16 +92,14 @@ export function createKYCService(
 /**
  * Helper to determine required verification level based on transaction amount
  */
-export function getRequiredVerificationLevel(
-  amountUSD: number
-): "basic" | "standard" | "enhanced" {
+export function getRequiredVerificationLevel(amountUSD: number): 'basic' | 'standard' | 'enhanced' {
   // Example thresholds - adjust based on your compliance requirements
   if (amountUSD < 1000) {
-    return "basic";
+    return 'basic';
   } else if (amountUSD < 10000) {
-    return "standard";
+    return 'standard';
   } else {
-    return "enhanced";
+    return 'enhanced';
   }
 }
 
@@ -106,8 +107,8 @@ export function getRequiredVerificationLevel(
  * Check if user's verification is sufficient for a transaction
  */
 export function isVerificationSufficient(
-  userLevel: "basic" | "standard" | "enhanced" | undefined,
-  requiredLevel: "basic" | "standard" | "enhanced"
+  userLevel: 'basic' | 'standard' | 'enhanced' | undefined,
+  requiredLevel: 'basic' | 'standard' | 'enhanced'
 ): boolean {
   if (!userLevel) return false;
 
@@ -119,4 +120,3 @@ export function isVerificationSufficient(
 
   return levelRanking[userLevel] >= levelRanking[requiredLevel];
 }
-

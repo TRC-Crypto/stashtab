@@ -1,15 +1,14 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { DataTable } from "@/components/DataTable";
-import { StatusBadge } from "@/components/StatusBadge";
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { DataTable } from '@/components/DataTable';
+import { StatusBadge } from '@/components/StatusBadge';
 import {
   getUser,
   getUserTransactions,
   formatCurrency,
-  formatAddress,
   formatDate,
   type Transaction,
-} from "@/lib/mockData";
+} from '@/lib/mockData';
 
 interface UserDetailPageProps {
   params: { id: string };
@@ -26,25 +25,23 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
 
   const transactionColumns = [
     {
-      key: "type",
-      header: "Type",
+      key: 'type',
+      header: 'Type',
       render: (tx: Transaction) => <span className="capitalize">{tx.type}</span>,
     },
     {
-      key: "amount",
-      header: "Amount",
-      render: (tx: Transaction) => (
-        <span className="font-mono">{formatCurrency(tx.amount)}</span>
-      ),
+      key: 'amount',
+      header: 'Amount',
+      render: (tx: Transaction) => <span className="font-mono">{formatCurrency(tx.amount)}</span>,
     },
     {
-      key: "status",
-      header: "Status",
+      key: 'status',
+      header: 'Status',
       render: (tx: Transaction) => <StatusBadge status={tx.status} />,
     },
     {
-      key: "txHash",
-      header: "Tx Hash",
+      key: 'txHash',
+      header: 'Tx Hash',
       render: (tx: Transaction) =>
         tx.txHash ? (
           <a
@@ -60,8 +57,8 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
         ),
     },
     {
-      key: "createdAt",
-      header: "Date",
+      key: 'createdAt',
+      header: 'Date',
       render: (tx: Transaction) => (
         <span className="text-zinc-400">{formatDate(tx.createdAt)}</span>
       ),
@@ -72,12 +69,14 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link
-          href="/users"
-          className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
-        >
+        <Link href="/users" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </Link>
         <div>
@@ -184,4 +183,3 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
     </div>
   );
 }
-

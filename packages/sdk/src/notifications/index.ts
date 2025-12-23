@@ -44,28 +44,27 @@
  * ```
  */
 
-export * from "./types";
-export { ResendEmailService, createEmailService, EmailBuilder } from "./email";
+export * from './types';
+export { ResendEmailService, createEmailService, EmailBuilder } from './email';
 export {
   ExpoPushService,
   FCMPushService,
   createExpoPushService,
   createFCMPushService,
   PushNotificationBuilder,
-} from "./push";
+} from './push';
+
+import { createEmailService } from './email';
+import { createExpoPushService } from './push';
 
 // Email templates
-export {
-  welcomeEmailHtml,
-  welcomeEmailText,
-  type WelcomeEmailData,
-} from "./templates/welcome";
+export { welcomeEmailHtml, welcomeEmailText, type WelcomeEmailData } from './templates/welcome';
 export {
   transactionEmailHtml,
   transactionEmailText,
   type TransactionEmailData,
   type TransactionType,
-} from "./templates/transaction";
+} from './templates/transaction';
 
 /**
  * Unified notification service that combines email and push
@@ -83,45 +82,41 @@ export class NotificationHub {
     appUrl: string;
   }) {
     if (!this.email) {
-      console.warn("Email service not configured");
+      console.warn('Email service not configured');
       return null;
     }
 
-    const { welcomeEmailHtml, welcomeEmailText } = await import(
-      "./templates/welcome"
-    );
+    const { welcomeEmailHtml, welcomeEmailText } = await import('./templates/welcome');
 
     return this.email.send({
       to: { email: params.to },
-      subject: "Welcome to Stashtab",
+      subject: 'Welcome to Stashtab',
       html: welcomeEmailHtml(params),
       text: welcomeEmailText(params),
-      tags: ["welcome", "onboarding"],
+      tags: ['welcome', 'onboarding'],
     });
   }
 
   async sendTransactionEmail(params: {
     to: string;
-    type: "deposit" | "withdrawal" | "send" | "receive";
+    type: 'deposit' | 'withdrawal' | 'send' | 'receive';
     amount: string;
     currency: string;
     txHash?: string;
     appUrl: string;
   }) {
     if (!this.email) {
-      console.warn("Email service not configured");
+      console.warn('Email service not configured');
       return null;
     }
 
-    const { transactionEmailHtml, transactionEmailText } = await import(
-      "./templates/transaction"
-    );
+    const { transactionEmailHtml, transactionEmailText } = await import('./templates/transaction');
 
     const subjects = {
-      deposit: "Deposit Received",
-      withdrawal: "Withdrawal Complete",
-      send: "Transfer Sent",
-      receive: "Transfer Received",
+      deposit: 'Deposit Received',
+      withdrawal: 'Withdrawal Complete',
+      send: 'Transfer Sent',
+      receive: 'Transfer Received',
     };
 
     return this.email.send({
@@ -135,7 +130,7 @@ export class NotificationHub {
         ...params,
         timestamp: new Date(),
       }),
-      tags: ["transaction", params.type],
+      tags: ['transaction', params.type],
     });
   }
 
@@ -146,7 +141,7 @@ export class NotificationHub {
     data?: Record<string, any>;
   }) {
     if (!this.push) {
-      console.warn("Push service not configured");
+      console.warn('Push service not configured');
       return null;
     }
 
@@ -155,7 +150,7 @@ export class NotificationHub {
       title: params.title,
       body: params.body,
       data: params.data,
-      sound: "default",
+      sound: 'default',
     });
   }
 }
@@ -169,17 +164,12 @@ export function createNotificationHub(config?: {
     defaultFrom?: { email: string; name?: string };
   };
   push?: {
-    expoAccessToken?: string;
+    accessToken?: string;
   };
 }): NotificationHub {
-  const email = config?.email
-    ? createEmailService(config.email)
-    : undefined;
+  const email = config?.email ? createEmailService(config.email) : undefined;
 
-  const push = config?.push
-    ? createExpoPushService(config.push)
-    : undefined;
+  const push = config?.push ? createExpoPushService(config.push) : undefined;
 
   return new NotificationHub(email, push);
 }
-

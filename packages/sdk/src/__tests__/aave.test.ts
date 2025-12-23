@@ -1,6 +1,5 @@
-import { SECONDS_PER_YEAR } from "@stashtab/config";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AaveService } from "../aave/AaveService";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AaveService } from '../aave/AaveService';
 
 // Mock the client
 const mockPublicClient = {
@@ -8,7 +7,7 @@ const mockPublicClient = {
   chain: { id: 84532 },
 } as any;
 
-describe("AaveService", () => {
+describe('AaveService', () => {
   let aaveService: AaveService;
 
   beforeEach(() => {
@@ -16,18 +15,18 @@ describe("AaveService", () => {
     aaveService = new AaveService(mockPublicClient, 84532);
   });
 
-  describe("calculateYieldPerSecond", () => {
-    it("should return 0 for zero balance", () => {
+  describe('calculateYieldPerSecond', () => {
+    it('should return 0 for zero balance', () => {
       const result = aaveService.calculateYieldPerSecond(0n, 5.0);
       expect(result).toBe(0n);
     });
 
-    it("should return 0 for zero APY", () => {
+    it('should return 0 for zero APY', () => {
       const result = aaveService.calculateYieldPerSecond(1000000n, 0);
       expect(result).toBe(0n);
     });
 
-    it("should calculate correct yield per second", () => {
+    it('should calculate correct yield per second', () => {
       // 1000 USDC at 5% APY
       const balance = 1000_000000n; // 1000 USDC (6 decimals)
       const apy = 5.0; // 5% APY
@@ -42,7 +41,7 @@ describe("AaveService", () => {
       expect(yieldPerSecond).toBeLessThan(10n);
     });
 
-    it("should scale with balance", () => {
+    it('should scale with balance', () => {
       const smallBalance = 100_000000n; // 100 USDC
       const largeBalance = 10000_000000n; // 10,000 USDC
       const apy = 5.0;
@@ -56,28 +55,28 @@ describe("AaveService", () => {
     });
   });
 
-  describe("formatBalance", () => {
-    it("should format USDC balance correctly", () => {
+  describe('formatBalance', () => {
+    it('should format USDC balance correctly', () => {
       const balance = 1234_567890n; // 1234.567890 USDC
       const formatted = aaveService.formatBalance(balance, 2);
-      expect(formatted).toBe("1234.56");
+      expect(formatted).toBe('1234.56');
     });
 
-    it("should handle zero balance", () => {
+    it('should handle zero balance', () => {
       const formatted = aaveService.formatBalance(0n, 2);
-      expect(formatted).toBe("0.00");
+      expect(formatted).toBe('0.00');
     });
 
-    it("should handle small amounts", () => {
+    it('should handle small amounts', () => {
       const balance = 1n; // 0.000001 USDC
       const formatted = aaveService.formatBalance(balance, 6);
-      expect(formatted).toBe("0.000001");
+      expect(formatted).toBe('0.000001');
     });
   });
 
-  describe("getUserBalance", () => {
-    it("should calculate yield earned correctly", async () => {
-      const safeAddress = "0x1234567890123456789012345678901234567890" as const;
+  describe('getUserBalance', () => {
+    it('should calculate yield earned correctly', async () => {
+      const safeAddress = '0x1234567890123456789012345678901234567890' as const;
       const totalDeposited = 1000_000000n; // 1000 USDC deposited
 
       // Mock: Safe has 0 USDC, Aave has 1050 USDC (earned 50 USDC yield)
@@ -85,10 +84,7 @@ describe("AaveService", () => {
         .mockResolvedValueOnce(0n) // USDC balance
         .mockResolvedValueOnce(1050_000000n); // aUSDC balance
 
-      const balance = await aaveService.getUserBalance(
-        safeAddress,
-        totalDeposited
-      );
+      const balance = await aaveService.getUserBalance(safeAddress, totalDeposited);
 
       expect(balance.safeBalance).toBe(0n);
       expect(balance.aaveBalance).toBe(1050_000000n);
@@ -96,21 +92,15 @@ describe("AaveService", () => {
       expect(balance.yieldEarned).toBe(50_000000n);
     });
 
-    it("should handle no yield scenario", async () => {
-      const safeAddress = "0x1234567890123456789012345678901234567890" as const;
+    it('should handle no yield scenario', async () => {
+      const safeAddress = '0x1234567890123456789012345678901234567890' as const;
       const totalDeposited = 1000_000000n;
 
-      mockPublicClient.readContract
-        .mockResolvedValueOnce(0n)
-        .mockResolvedValueOnce(1000_000000n); // Same as deposited
+      mockPublicClient.readContract.mockResolvedValueOnce(0n).mockResolvedValueOnce(1000_000000n); // Same as deposited
 
-      const balance = await aaveService.getUserBalance(
-        safeAddress,
-        totalDeposited
-      );
+      const balance = await aaveService.getUserBalance(safeAddress, totalDeposited);
 
       expect(balance.yieldEarned).toBe(0n);
     });
   });
 });
-
