@@ -1,0 +1,115 @@
+# Branch Protection Setup
+
+This repository uses branch protection rules to ensure code quality and prevent accidental changes to the main branch.
+
+## Automated Setup
+
+You can set up branch protection automatically using the provided script:
+
+```bash
+GITHUB_TOKEN=your_token pnpm setup:branch-protection
+```
+
+Or using tsx directly:
+
+```bash
+GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts
+```
+
+### Creating a GitHub Token
+
+1. Go to https://github.com/settings/tokens
+2. Click "Generate new token" → "Generate new token (classic)"
+3. Give it a descriptive name (e.g., "Stashtab Branch Protection Setup")
+4. Select the `repo` scope (Full control of private repositories)
+5. Click "Generate token"
+6. Copy the token and use it as the `GITHUB_TOKEN` environment variable
+
+## Manual Setup
+
+If you prefer to set up branch protection manually:
+
+1. Navigate to your repository on GitHub
+2. Go to **Settings** → **Branches**
+3. Under "Branch protection rules", click **Add rule** or edit the existing rule for `main`
+4. Configure the following settings:
+
+### Branch Protection Settings
+
+- **Branch name pattern**: `main`
+- **Require a pull request before merging**:
+  - ✅ Require approvals: `1`
+  - ✅ Dismiss stale pull request approvals when new commits are pushed
+  - ✅ Require review from Code Owners: (optional)
+- **Require status checks to pass before merging**:
+  - ✅ Require branches to be up to date before merging
+  - Select the following required status checks:
+    - `CI / Build (push)`
+    - `CI / Lint (push)`
+    - `CI / Test (push)`
+    - `CI / Type Check (push)`
+- **Require conversation resolution before merging**: ✅ Enabled
+- **Do not allow bypassing the above settings**: ✅ Enabled (enforce for administrators)
+- **Restrict who can push to matching branches**: (optional, leave empty to allow all collaborators)
+- **Allow force pushes**: ❌ Disabled
+- **Allow deletions**: ❌ Disabled
+
+### Merge Options
+
+- ✅ Allow squash merging
+- ✅ Allow merge commits
+- ✅ Allow rebase merging
+- ❌ Allow auto-merge: (optional)
+
+## Current Protection Rules
+
+The main branch is protected with the following rules:
+
+- ✅ All status checks must pass before merging
+- ✅ At least 1 approval required for pull requests
+- ✅ Stale approvals are dismissed on new commits
+- ✅ Conversation resolution required
+- ✅ Administrators are also subject to these rules
+- ❌ Force pushes are not allowed
+- ❌ Branch deletion is not allowed
+
+## Required Status Checks
+
+The following CI checks must pass before merging:
+
+- **CI / Build (push)** - Ensures all packages build successfully
+- **CI / Lint (push)** - Ensures code follows linting rules
+- **CI / Test (push)** - Ensures all tests pass
+- **CI / Type Check (push)** - Ensures TypeScript types are correct
+
+## Troubleshooting
+
+### "Status checks must pass" but checks aren't showing
+
+If the required status checks don't appear in the dropdown:
+
+1. Make sure the CI workflow has run at least once on the main branch
+2. Wait a few minutes for GitHub to update the available checks
+3. Try refreshing the branch protection settings page
+
+### Can't push to main branch
+
+If you're unable to push directly to main:
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make your changes and commit
+3. Push the branch: `git push origin feature/your-feature`
+4. Create a pull request on GitHub
+5. Wait for CI checks to pass
+6. Get approval from a reviewer
+7. Merge the pull request
+
+### Bypassing protection (not recommended)
+
+If you absolutely need to bypass protection (e.g., for hotfixes), you can:
+
+1. Temporarily disable branch protection in settings
+2. Make your changes
+3. Re-enable branch protection immediately
+
+**Note**: This should only be done in emergencies and with proper authorization.

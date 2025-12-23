@@ -32,6 +32,7 @@
     "deploy:auto": "tsx scripts/deploy.ts",
     "create-template": "tsx scripts/create-template.ts",
     "backup-db": "tsx scripts/backup-db.ts",
+    "setup:branch-protection": "tsx scripts/setup-branch-protection.ts",
     "prepare": "husky"
   },
   "devDependencies": {

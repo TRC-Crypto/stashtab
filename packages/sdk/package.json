@@ -11,7 +11,8 @@
     "./privy": "./src/privy/index.ts",
     "./fiat": "./src/fiat/index.ts",
     "./notifications": "./src/notifications/index.ts",
-    "./kyc": "./src/kyc/index.ts"
+    "./kyc": "./src/kyc/index.ts",
+    "./monitoring": "./src/monitoring/index.ts"
   },
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
