@@ -68,7 +68,7 @@ export class AaveService {
     // Convert APY to per-second rate
     // yield_per_second = balance * (apy / 100) / seconds_per_year
     const apyBigInt = BigInt(Math.floor(apyPercent * 1e6)); // 6 decimal precision
-    const yieldPerSecond = (balance * apyBigInt) / (BigInt(SECONDS_PER_YEAR) * 1_000_000n);
+    const yieldPerSecond = (balance * apyBigInt) / (BigInt(SECONDS_PER_YEAR) * 100_000_000n);
 
     return yieldPerSecond;
   }
