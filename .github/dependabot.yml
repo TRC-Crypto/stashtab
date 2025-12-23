@@ -8,13 +8,39 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
-    open-pull-requests-limit: 10
+    # Only update patch and minor versions to avoid breaking changes
+    versioning-strategy: increase
+    # Limit to 5 PRs at a time to avoid CI overload
+    open-pull-requests-limit: 5
     labels:
       - 'dependencies'
       - 'automated'
     commit-message:
       prefix: 'chore'
       include: 'scope'
+    # Ignore major version updates for packages with breaking changes
+    ignore:
+      # Major version updates that require code changes
+      - dependency-name: 'vitest'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'framer-motion'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@hono/zod-validator'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'tailwind-merge'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@commitlint/cli'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@commitlint/config-conventional'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'clsx'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@expo/vector-icons'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'expo-font'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@cloudflare/workers-types'
+        update-types: ['version-update:semver-major']
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: 'github-actions'
@@ -24,3 +50,5 @@ updates:
     labels:
       - 'github-actions'
       - 'automated'
+    # Be more conservative with GitHub Actions updates
+    open-pull-requests-limit: 3
