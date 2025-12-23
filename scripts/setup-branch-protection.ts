@@ -54,32 +54,148 @@ function generateJWT(): string {
     throw new Error('GitHub App credentials not provided');
   }
 
-  // Note: This is a simplified version. For production, use a proper JWT library
-  // like 'jsonwebtoken' or 'jose'. This example shows the concept.
-  const now = Math.floor(Date.now() / 1000);
-  const payload = {
-    iat: now - 60, // Issued at (1 minute ago to account for clock skew)
-    exp: now + 600, // Expires in 10 minutes
-    iss: GITHUB_APP_ID, // Issuer (App ID)
-  };
+  try {
+    // Dynamic import to avoid requiring jsonwebtoken if using PAT
+    const jwt = require('jsonwebtoken');
 
-  // For a real implementation, you'd need to sign this with the private key
-  // using RS256 algorithm. This requires a JWT library.
-  console.warn('⚠️  GitHub App JWT generation requires a JWT library.');
-  console.warn('   For now, using Personal Access Token authentication.');
-  throw new Error('GitHub App authentication requires JWT library (e.g., jsonwebtoken)');
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+      iat: now - 60, // Issued at (1 minute ago to account for clock skew)
+      exp: now + 600, // Expires in 10 minutes
+      iss: GITHUB_APP_ID, // Issuer (App ID)
+    };
+
+    // Normalize the private key (handle newlines in environment variable)
+    const privateKey = GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+
+    return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+  } catch (error: any) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+      console.error('❌ jsonwebtoken package not found.');
+      console.error('   Install it with: pnpm add -D jsonwebtoken @types/jsonwebtoken');
+      process.exit(1);
+    }
+    throw new Error(`Failed to generate JWT: ${error.message}`);
+  }
+}
+
+/**
+ * Get installation ID for the repository
+ */
+async function getInstallationId(jwt: string): Promise<number> {
+  // First, try to get installation directly from the repository
+  try {
+    const repoResponse = await fetch(`${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/installation`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        Accept: 'application/vnd.github.v3+json',
+        'User-Agent': 'stashtab-setup-script',
+      },
+    });
+
+    if (repoResponse.ok) {
+      const installation = await repoResponse.json();
+      return installation.id;
+    }
+  } catch {
+    // Fall through to list all installations
+  }
+
+  // Fallback: List all installations and find the one for this repository
+  const response = await fetch(`${API_BASE}/app/installations`, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'stashtab-setup-script',
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: response.statusText }));
+    throw {
+      status: response.status,
+      message: error.message || response.statusText,
+      data: error,
+    };
+  }
+
+  const installations = await response.json();
+
+  // Try to find installation by account (organization or user)
+  let installation = installations.find((inst: any) => inst.account?.login === REPO_OWNER);
+
+  // If not found, check each installation's repositories
+  if (!installation) {
+    for (const inst of installations) {
+      try {
+        const reposResponse = await fetch(`${API_BASE}/installation/${inst.id}/repositories`, {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+            Accept: 'application/vnd.github.v3+json',
+            'User-Agent': 'stashtab-setup-script',
+          },
+        });
+        if (reposResponse.ok) {
+          const repos = await reposResponse.json();
+          if (
+            repos.repositories?.some((repo: any) => repo.full_name === `${REPO_OWNER}/${REPO_NAME}`)
+          ) {
+            installation = inst;
+            break;
+          }
+        }
+      } catch {
+        // Continue searching
+      }
+    }
+  }
+
+  if (!installation) {
+    throw new Error(
+      `GitHub App is not installed on repository ${REPO_OWNER}/${REPO_NAME}.\n` +
+        `Please install it at: https://github.com/apps/${GITHUB_APP_ID}/installations/new`
+    );
+  }
+
+  return installation.id;
 }
 
 /**
  * Get installation access token for GitHub App
  */
 async function getInstallationToken(): Promise<string> {
-  // This would require:
-  // 1. Generate JWT using the App ID and private key
-  // 2. Get installation ID for the repository
-  // 3. Exchange JWT for installation access token
-  // For now, we'll use PAT authentication
-  throw new Error('GitHub App authentication not fully implemented. Use GITHUB_TOKEN for now.');
+  if (!GITHUB_APP_ID || !GITHUB_APP_PRIVATE_KEY) {
+    throw new Error('GitHub App credentials not provided');
+  }
+
+  // Step 1: Generate JWT
+  const jwt = generateJWT();
+
+  // Step 2: Get installation ID
+  const installationId = await getInstallationId(jwt);
+
+  // Step 3: Exchange JWT for installation access token
+  const response = await fetch(`${API_BASE}/app/installations/${installationId}/access_tokens`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'stashtab-setup-script',
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: response.statusText }));
+    throw {
+      status: response.status,
+      message: error.message || response.statusText,
+      data: error,
+    };
+  }
+
+  const data = await response.json();
+  return data.token;
 }
 
 /**
@@ -122,7 +238,9 @@ async function apiRequest(method: string, endpoint: string, body?: any) {
 }
 
 async function setupBranchProtection() {
+  const authMethod = GITHUB_TOKEN ? 'Personal Access Token' : 'GitHub App';
   console.log(`🔒 Setting up branch protection for ${REPO_OWNER}/${REPO_NAME}:${BRANCH}...`);
+  console.log(`   Using authentication: ${authMethod}`);
   console.log('');
 
   try {
