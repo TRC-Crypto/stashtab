@@ -2,13 +2,26 @@
 
 This repository uses branch protection rules to ensure code quality and prevent accidental changes to the main branch.
 
-> 📖 **New to GitHub Apps?** See [GITHUB_APP_SETUP.md](./GITHUB_APP_SETUP.md) for detailed step-by-step instructions on creating and configuring a GitHub App.
+## Quick Start (Recommended)
+
+**Just getting started?** Use a Personal Access Token - it's the simplest method:
+
+1. Create a token at https://github.com/settings/tokens (select `repo` scope)
+2. Run: `GITHUB_TOKEN=your_token pnpm setup:branch-protection`
+
+That's it! See [Option 2 below](#option-2-personal-access-token-recommended-for-getting-started) for details.
+
+> 📖 **Want to use GitHub Apps instead?** See [GITHUB_APP_SETUP.md](./GITHUB_APP_SETUP.md) for detailed instructions. (Note: You don't need a website - placeholder URLs work fine!)
 
 ## Automated Setup
 
-You can set up branch protection automatically using the provided script. We recommend using **GitHub Apps** for better security and fine-grained permissions.
+You can set up branch protection automatically using the provided script.
 
-### Option 1: GitHub App (Recommended)
+**For most users, we recommend starting with a Personal Access Token (Option 2)** - it's simpler and doesn't require any setup. GitHub Apps (Option 1) are great for production/teams but require more initial setup.
+
+### Option 1: GitHub App (Advanced - Optional)
+
+> 💡 **Don't have a website yet?** That's fine! You can use placeholder URLs for the GitHub App setup. The callback URL and webhook URL can be left empty - they're not needed for branch protection.
 
 GitHub Apps provide:
 
@@ -63,7 +76,9 @@ The script will automatically:
 3. Exchange the JWT for an installation access token
 4. Use the token to configure branch protection
 
-### Option 2: Personal Access Token
+### Option 2: Personal Access Token (Recommended for Getting Started)
+
+This is the simplest method - perfect if you're just getting started or don't have a deployment yet.
 
 ```bash
 GITHUB_TOKEN=your_token pnpm setup:branch-protection
@@ -80,11 +95,18 @@ GITHUB_TOKEN=your_token tsx scripts/setup-branch-protection.ts
 1. Go to https://github.com/settings/tokens
 2. Click **"Generate new token"** → **"Generate new token (classic)"**
 3. Give it a descriptive name (e.g., "Stashtab Branch Protection Setup")
-4. Select the `repo` scope (Full control of private repositories)
-5. Click **"Generate token"**
-6. Copy the token and use it as the `GITHUB_TOKEN` environment variable
+4. Set expiration (recommended: 90 days or custom)
+5. Select the `repo` scope (Full control of private repositories)
+6. Click **"Generate token"**
+7. **Important**: Copy the token immediately - you won't be able to see it again!
+8. Use it as the `GITHUB_TOKEN` environment variable
 
-**Security Note**: Personal Access Tokens have broad permissions. Consider using GitHub Apps for better security.
+**Security Note**:
+
+- Personal Access Tokens work great for personal projects and getting started
+- Store the token securely (password manager, environment variables)
+- You can always switch to GitHub Apps later if you need more fine-grained control
+- Consider using GitHub Apps for production/team environments
 
 ## Manual Setup
 

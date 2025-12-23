@@ -23,10 +23,12 @@ GitHub Apps provide:
 
 3. Fill in the basic information:
    - **GitHub App name**: `Stashtab Branch Protection` (or any name you prefer)
-   - **Homepage URL**: `https://github.com/YOUR-USERNAME/stashtab` (replace YOUR-USERNAME with your GitHub username)
-   - **User authorization callback URL**: Leave empty (not needed for this use case)
-   - **Webhook**: Uncheck (not needed)
-   - **Webhook URL**: Leave empty
+   - **Homepage URL**: `https://github.com/YOUR-USERNAME/stashtab` (can be your repo URL or any placeholder - not used for branch protection)
+   - **User authorization callback URL**: Leave empty ✅ (not needed)
+   - **Webhook**: Uncheck ✅ (not needed)
+   - **Webhook URL**: Leave empty ✅ (not needed)
+
+   > 💡 **Note**: You don't need a website or deployment! These URLs are just metadata. For branch protection setup, you can use placeholder URLs or your repository URL.
 
 4. Set **Repository permissions**:
    - **Administration**: **Read & write** (required for branch protection)
