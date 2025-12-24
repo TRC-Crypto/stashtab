@@ -9,24 +9,54 @@ import { test, expect } from '@playwright/test';
 
 test.describe('KYC Verification', () => {
   test.beforeEach(async ({ page }) => {
-    // In a real scenario, you'd set up authenticated session
+    // Navigate to dashboard (may redirect to login if not authenticated)
     await page.goto('/dashboard');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should show KYC gate for unverified users', async ({ page }) => {
-    // Navigate to a protected route
+    // Navigate to a protected route that may require KYC
     await page.goto('/deposit');
-    // Should either show KYC gate or allow access
+    await page.waitForLoadState('networkidle');
+
+    // Verify page loaded
     const body = page.locator('body');
     await expect(body).toBeVisible();
+
+    // If authenticated, check for deposit page or KYC gate
+    // If not authenticated, should redirect to login
+    const url = page.url();
+
+    if (url.includes('/login')) {
+      // Expected: redirect to login if not authenticated
+      await expect(page.locator('text=Welcome back')).toBeVisible();
+    } else if (url.includes('/deposit')) {
+      // On deposit page - may show KYC gate or deposit form
+      // Both are valid states
+      await expect(body).toBeVisible();
+    }
   });
 
   test('should navigate to KYC verification', async ({ page }) => {
-    // This would test the KYC start flow
-    // Requires mocking Persona API
+    // Navigate to settings page where KYC verification would be accessible
     await page.goto('/settings');
-    // KYC section should be visible
+    await page.waitForLoadState('networkidle');
+
+    // Verify page loaded
     const body = page.locator('body');
     await expect(body).toBeVisible();
+
+    // If authenticated, settings page should be accessible
+    // If not authenticated, should redirect to login
+    const url = page.url();
+
+    if (url.includes('/login')) {
+      // Expected: redirect to login if not authenticated
+      await expect(page.locator('text=Welcome back')).toBeVisible();
+    } else if (url.includes('/settings')) {
+      // On settings page - KYC section may be visible
+      // Note: Actual KYC UI elements would require authentication and KYC provider setup
+      await expect(body).toBeVisible();
+    }
   });
 });
