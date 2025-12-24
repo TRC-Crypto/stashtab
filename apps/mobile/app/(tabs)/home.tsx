@@ -33,9 +33,17 @@ function useLiveYield(balance: number, apy: number) {
   return yieldAmount;
 }
 
-function TransactionItem({ transaction }: { transaction: (typeof mockTransactions)[0] }) {
+interface Transaction {
+  id?: string;
+  type: 'deposit' | 'withdrawal' | 'send' | 'receive';
+  amount: string;
+  timestamp: number;
+  status?: 'pending' | 'completed' | 'failed';
+}
+
+function TransactionItem({ transaction }: { transaction: Transaction }) {
   const isIncoming = transaction.type === 'deposit' || transaction.type === 'receive';
-  const icons = {
+  const icons: Record<string, string> = {
     deposit: '📥',
     withdrawal: '📤',
     send: '➡️',
@@ -45,11 +53,13 @@ function TransactionItem({ transaction }: { transaction: (typeof mockTransaction
   return (
     <Pressable className="flex-row items-center py-4 border-b border-surface-300 active:opacity-70">
       <View className="w-10 h-10 rounded-full bg-surface-300 items-center justify-center mr-3">
-        <Text className="text-lg">{icons[transaction.type]}</Text>
+        <Text className="text-lg">{icons[transaction.type] || '📋'}</Text>
       </View>
       <View className="flex-1">
         <Text className="text-white font-medium capitalize">{transaction.type}</Text>
-        <Text className="text-zinc-500 text-sm">{formatDate(transaction.timestamp)}</Text>
+        <Text className="text-zinc-500 text-sm">
+          {formatDate(transaction.timestamp.toString())}
+        </Text>
       </View>
       <View className="items-end">
         <Text className={`font-mono font-semibold ${isIncoming ? 'text-yield' : 'text-white'}`}>
@@ -244,7 +254,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View className="bg-yield/20 px-3 py-1 rounded-full">
-            <Text className="text-yield font-medium">{mockUser.apy}% APY</Text>
+            <Text className="text-yield font-medium">{accountData.apy}% APY</Text>
           </View>
         </View>
       </View>

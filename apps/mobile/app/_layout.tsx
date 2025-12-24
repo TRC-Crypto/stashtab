@@ -26,28 +26,20 @@ class ErrorBoundary extends Component<
 
   render() {
     if (this.state.hasError && this.state.error) {
-      return this.props.fallback ? (
-        this.props.fallback(this.state.error, this.reset)
-      ) : (
-        <ErrorFallback error={this.state.error} resetErrorBoundary={this.reset} />
-      );
+      return this.props.fallback
+        ? this.props.fallback(this.state.error, this.reset)
+        : ErrorFallback(this.state.error, this.reset);
     }
     return this.props.children;
   }
 }
 
-function ErrorFallback({
-  error,
-  resetErrorBoundary,
-}: {
-  error: Error;
-  resetErrorBoundary: () => void;
-}) {
+function ErrorFallback(error: Error, reset: () => void) {
   return (
     <View className="flex-1 bg-surface-50 items-center justify-center px-6">
       <Text className="text-red-400 text-xl font-semibold mb-2">Something went wrong</Text>
       <Text className="text-zinc-400 text-center mb-6">{error.message}</Text>
-      <Pressable onPress={resetErrorBoundary} className="bg-yield px-6 py-3 rounded-xl">
+      <Pressable onPress={reset} className="bg-yield px-6 py-3 rounded-xl">
         <Text className="text-black font-semibold">Try Again</Text>
       </Pressable>
     </View>
@@ -56,7 +48,7 @@ function ErrorFallback({
 
 export default function RootLayout() {
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <ErrorBoundary fallback={ErrorFallback}>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
