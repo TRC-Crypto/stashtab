@@ -10,6 +10,7 @@ import { authRoutes } from './routes/auth';
 import { fiatRoutes } from './routes/fiat';
 import { healthRoutes } from './routes/health';
 import { kycRoutes } from './routes/kyc';
+import { organizationRoutes } from './routes/organizations';
 import { yieldRoutes } from './routes/yield';
 import type { Env } from './types';
 
@@ -42,11 +43,10 @@ app.use(
     origin: (origin) => {
       // Allow localhost for development
       if (origin?.includes('localhost')) return origin;
-      // Allow your production domains
-      if (origin?.includes('stashtab.dev')) return origin;
-      if (origin?.includes('stashtab.com')) return origin;
       // Cloudflare Pages preview URLs
       if (origin?.includes('.pages.dev')) return origin;
+      // Add your production domains here when deploying:
+      // if (origin?.includes('your-domain.com')) return origin;
       return null;
     },
     credentials: true,
@@ -102,6 +102,7 @@ app.route('/account', accountRoutes);
 app.route('/yield', yieldRoutes);
 app.route('/fiat', fiatRoutes);
 app.route('/kyc', kycRoutes);
+app.route('/organizations', organizationRoutes);
 app.route('/', healthRoutes);
 
 // ============================================================================

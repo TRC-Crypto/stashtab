@@ -1,10 +1,12 @@
 # Stashtab Architecture
 
-This document explains how Stashtab works under the hood.
+This document explains how Stashtab primitives work and how to compose them.
 
 ## Overview
 
-Stashtab is a DeFi neobank that abstracts blockchain complexity from users. Users sign up with email, deposit USDC, and earn yield—without ever managing private keys or interacting with smart contracts directly.
+Stashtab is a set of composable primitives for building onchain finance products. Each primitive is a self-contained module that solves one specific problem, allowing builders to compose them into whatever they need.
+
+The architecture is designed around composability—use what you need, ignore the rest.
 
 ## System Components
 
@@ -58,46 +60,115 @@ The config package (`@stashtab/config`) provides:
 - **Chain configurations** and RPC URLs
 - **Utility functions** for formatting and parsing
 
-## System Architecture Diagram
+## Primitive Architecture
+
+Stashtab primitives follow a consistent structure:
+
+```
+packages/sdk/src/
+├── core/              # Core infrastructure primitives
+│   ├── auth/         # Authentication
+│   ├── accounts/     # Account abstraction
+│   └── types/        # Shared types
+├── yield/            # Yield generation primitives
+│   ├── aave/         # Aave v3
+│   ├── morpho/       # Morpho Finance
+│   └── router/       # Yield routing
+├── payments/         # Payment primitives
+│   ├── transfers/    # Basic transfers
+│   ├── batch/        # Batch payments
+│   └── streaming/    # Streaming payments
+├── fiat/             # Fiat primitives
+│   ├── onramp/       # Fiat to crypto
+│   └── offramp/      # Crypto to fiat
+└── compliance/       # Compliance primitives
+    ├── kyc/          # KYC verification
+    ├── sanctions/    # Sanctions screening
+    └── reporting/    # Transaction reporting
+```
+
+## Composition Patterns
+
+Primitives are designed to be composed. Here are common patterns:
+
+### Neobank Pattern
+
+```typescript
+// Compose: accounts + yield + payments + fiat + compliance
+const safe = await deploySafe({ owners: [userAddress] });
+const publicClient = createStashtabPublicClient(8453);
+const aave = createAaveService({ chainId: 8453, publicClient });
+const onramp = createOnrampService({ chainId: 8453 });
+const kyc = createPersonaService({ apiKey: '...' });
+```
+
+### Payroll Pattern
+
+```typescript
+// Compose: payments (batch/streaming) + compliance
+const batch = createBatchPaymentService({ chainId: 8453 });
+const reporting = createComplianceReportingService({ chainId: 8453 });
+```
+
+### Treasury Pattern
+
+```typescript
+// Compose: yield router + accounts + reporting
+const router = createYieldRouter({ chainId: 8453, strategy: 'balanced' });
+await router.deposit(usdcAddress, amount, config);
+```
+
+## Multi-Chain Architecture
+
+Stashtab supports multiple chains through a chain abstraction layer:
+
+- **Base**: Low fees, Coinbase ecosystem
+- **Arbitrum**: High throughput, low latency
+- **Optimism**: EVM compatibility
+- **Polygon**: Mass market access
+
+Each primitive accepts a `chainId` parameter, and the SDK handles chain-specific configurations automatically.
+
+## Reference Implementation Architecture
+
+The monorepo includes reference implementations showing how to use primitives:
 
 ```mermaid
 graph TB
-    subgraph Frontend["Frontend Layer"]
+    subgraph Frontend["Frontend Layer (Reference)"]
         Web[Web App<br/>Next.js]
         Admin[Admin Dashboard<br/>Next.js]
         Mobile[Mobile App<br/>Expo/React Native]
     end
 
-    subgraph Backend["Backend Layer"]
+    subgraph Backend["Backend Layer (Reference)"]
         API[API<br/>Cloudflare Workers]
         DB[(D1 Database)]
         KV[KV Cache]
     end
 
+    subgraph Primitives["SDK Primitives"]
+        Core[Core]
+        Yield[Yield]
+        Payments[Payments]
+        Fiat[Fiat]
+        Compliance[Compliance]
+    end
+
     subgraph Infrastructure["Infrastructure"]
         Privy[Privy<br/>Authentication]
         Safe[Safe<br/>Smart Accounts]
-        Aave[Aave v3<br/>Yield Generation]
-        Base[Base L2<br/>Blockchain]
-    end
-
-    subgraph Integrations["Integrations"]
-        Stripe[Stripe<br/>Fiat Ramp]
-        MoonPay[MoonPay<br/>Fiat Ramp]
-        Persona[Persona<br/>KYC]
-        Resend[Resend<br/>Email]
-        Expo[Expo<br/>Push]
+        Aave[Aave v3<br/>Yield]
+        Morpho[Morpho<br/>Yield]
+        Base[Multi-Chain<br/>Base, Arbitrum, Optimism, Polygon]
     end
 
     Web --> API
     Admin --> API
     Mobile --> API
 
-    API --> DB
-    API --> KV
-    API --> Privy
-    API --> Safe
-    API --> Aave
+    API --> Primitives
+    Primitives --> Infrastructure
     API --> Stripe
     API --> MoonPay
     API --> Persona

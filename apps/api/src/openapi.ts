@@ -67,10 +67,11 @@ The \`requestId\` can be used when contacting support.`,
       url: 'http://localhost:8787',
       description: 'Local development',
     },
-    {
-      url: 'https://api.stashtab.dev',
-      description: 'Production',
-    },
+    // Add your production server URL when deploying:
+    // {
+    //   url: 'https://your-api-domain.com',
+    //   description: 'Production',
+    // },
   ],
   tags: [
     {
@@ -408,7 +409,16 @@ The \`requestId\` can be used when contacting support.`,
           aTokenAddress: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' },
           poolAddress: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' },
         },
-        required: ['asset', 'chainId', 'apyPercent', 'liquidityRate', 'liquidityIndex', 'lastUpdated', 'aTokenAddress', 'poolAddress'],
+        required: [
+          'asset',
+          'chainId',
+          'apyPercent',
+          'liquidityRate',
+          'liquidityIndex',
+          'lastUpdated',
+          'aTokenAddress',
+          'poolAddress',
+        ],
       },
       Error: {
         type: 'object',
@@ -514,4 +524,3 @@ The \`requestId\` can be used when contacting support.`,
     },
   },
 };
-

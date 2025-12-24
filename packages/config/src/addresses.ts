@@ -19,6 +19,16 @@ export const ADDRESSES = {
     SAFE_SINGLETON: '0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552' as Address,
     SAFE_FALLBACK_HANDLER: '0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4' as Address,
     MULTI_SEND: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761' as Address,
+
+    // Sablier v2 Protocol
+    // LockupLinear contract for linear streaming payments
+    // See: https://docs.sablier.com/contracts/v2/deployments
+    SABLIER_LOCKUP_LINEAR: '0xAFb979d9afAd1AD27C5eFf4E27226E3AB9e5d8F6' as Address,
+
+    // Morpho Blue Protocol
+    // Main Morpho Blue contract
+    // See: https://docs.morpho.org/contracts/addresses
+    MORPHO_BLUE: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb' as Address,
   },
 
   // Base Sepolia Testnet (Chain ID: 84532)
@@ -36,6 +46,14 @@ export const ADDRESSES = {
     SAFE_SINGLETON: '0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552' as Address,
     SAFE_FALLBACK_HANDLER: '0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4' as Address,
     MULTI_SEND: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761' as Address,
+
+    // Sablier v2 Protocol (testnet)
+    // NOTE: Verify address against official documentation before production use
+    SABLIER_LOCKUP_LINEAR: '0xAFb979d9afAd1AD27C5eFf4E27226E3AB9e5d8F6' as Address,
+
+    // Morpho Blue Protocol (testnet - may not be available)
+    // NOTE: Verify address against official documentation before production use
+    MORPHO_BLUE: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb' as Address,
   },
 } as const;
 

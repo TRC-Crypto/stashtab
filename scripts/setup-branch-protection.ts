@@ -26,15 +26,45 @@
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_APP_ID = process.env.GITHUB_APP_ID;
 const GITHUB_APP_PRIVATE_KEY = process.env.GITHUB_APP_PRIVATE_KEY;
+
+// Try to extract repository info from package.json as fallback
+function getRepoFromPackageJson(): { owner: string; name: string } | null {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    if (fs.existsSync(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+      if (packageJson.repository?.url) {
+        // Extract from formats like: https://github.com/owner/repo.git or git+https://github.com/owner/repo.git
+        const match = packageJson.repository.url.match(
+          /github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?$/
+        );
+        if (match) {
+          return { owner: match[1], name: match[2] };
+        }
+      }
+    }
+  } catch {
+    // Ignore errors, fall back to defaults
+  }
+  return null;
+}
+
 // Default to extracting from GITHUB_REPOSITORY or use environment variable
 // Format: owner/repo or just owner (will default repo to 'stashtab')
+const packageRepo = getRepoFromPackageJson();
 const REPO_OWNER =
   process.env.GITHUB_REPOSITORY_OWNER ||
   process.env.GITHUB_REPOSITORY?.split('/')[0] ||
   process.env.GITHUB_USERNAME ||
+  packageRepo?.owner ||
   'your-username';
 const REPO_NAME =
-  process.env.GITHUB_REPOSITORY?.split('/')[1] || process.env.GITHUB_REPOSITORY_NAME || 'stashtab';
+  process.env.GITHUB_REPOSITORY?.split('/')[1] ||
+  process.env.GITHUB_REPOSITORY_NAME ||
+  packageRepo?.name ||
+  'stashtab';
 const BRANCH = 'main';
 const API_BASE = 'https://api.github.com';
 

@@ -31,7 +31,8 @@
     "react-native-screens": "~4.1.0",
     "react-native-svg": "15.8.0",
     "react-native-qrcode-svg": "^6.3.0",
-    "nativewind": "^4.0.0"
+    "nativewind": "^4.0.0",
+    "react-error-boundary": "^4.0.13"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

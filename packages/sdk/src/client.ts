@@ -15,6 +15,13 @@ export type StashtabWalletClient = WalletClient<HttpTransport, Chain, Account>;
 
 /**
  * Create a public client for reading blockchain data
+ *
+ * @example
+ * ```typescript
+ * import { createStashtabPublicClient } from '@stashtab/sdk/client';
+ *
+ * const publicClient = createStashtabPublicClient(8453); // Base mainnet
+ * ```
  */
 export function createStashtabPublicClient(chainId: number, rpcUrl?: string): StashtabPublicClient {
   const chain = getChain(chainId);
@@ -28,6 +35,13 @@ export function createStashtabPublicClient(chainId: number, rpcUrl?: string): St
 
 /**
  * Create a wallet client for signing transactions
+ *
+ * @example
+ * ```typescript
+ * import { createStashtabWalletClient } from '@stashtab/sdk/client';
+ *
+ * const walletClient = createStashtabWalletClient(8453, account);
+ * ```
  */
 export function createStashtabWalletClient(
   chainId: number,

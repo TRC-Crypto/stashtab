@@ -1,5 +1,5 @@
 /**
- * Fiat On/Off Ramp Services
+ * Fiat on/off ramp primitives
  *
  * This module provides integrations with fiat-to-crypto payment providers.
  *
@@ -39,7 +39,30 @@
  * ```
  */
 
+// Legacy exports (for backward compatibility)
 export * from './types';
+
+// New modular exports (selective to avoid duplicates)
+// Export onramp/offramp types and interfaces, but not the service implementations
+// to avoid duplicate exports with the legacy exports below
+export type {
+  OnrampProvider,
+  OnrampQuoteRequest,
+  OnrampQuote,
+  OnrampOrderRequest,
+  OnrampOrderResult,
+  OnrampService,
+} from './onramp';
+export type {
+  OfframpProvider,
+  OfframpQuoteRequest,
+  OfframpQuote,
+  OfframpWithdrawalRequest,
+  OfframpWithdrawalResult,
+  OfframpService,
+} from './offramp';
+
+// Legacy service exports (for backward compatibility)
 export { StripeOnRampService, createStripeService } from './stripe';
 export { MoonPayService, createMoonPayService } from './moonpay';
 

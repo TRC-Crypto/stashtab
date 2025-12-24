@@ -47,6 +47,18 @@ declare module 'hono' {
   interface ContextVariableMap {
     requestId: string;
     userId?: string;
+    organization?: {
+      id: string;
+      name: string;
+      slug: string;
+      api_key: string;
+      branding?: {
+        logo_url?: string;
+        primary_color?: string;
+        secondary_color?: string;
+        domain?: string;
+      };
+    };
   }
 }
 
@@ -66,4 +78,32 @@ export interface PrivyClaims {
   issuer: string;
   issuedAt: number;
   expiration: number;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  api_key: string;
+  branding?: {
+    logo_url?: string;
+    primary_color?: string;
+    secondary_color?: string;
+    domain?: string;
+  };
+  created_at: number;
+  updated_at: number;
+}
+
+export interface OrganizationSettings {
+  organization_id: string;
+  chain_id: number;
+  rpc_url?: string;
+  enabled_features?: {
+    yield?: boolean;
+    payments?: boolean;
+    fiat?: boolean;
+  };
+  webhook_url?: string;
+  created_at: number;
 }
