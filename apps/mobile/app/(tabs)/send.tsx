@@ -1,6 +1,6 @@
 import { View, Text, TextInput, Pressable, Alert, ActivityIndicator, Keyboard } from 'react-native';
-import { useState, useMemo } from 'react';
-import { mockUser } from '@/lib/mockData';
+import { useState, useMemo, useEffect } from 'react';
+import api from '@/lib/api';
 
 // Validate Ethereum address
 function isValidAddress(address: string): boolean {
@@ -18,8 +18,42 @@ export default function SendScreen() {
   const [amount, setAmount] = useState('');
   const [sending, setSending] = useState(false);
   const [addressFocused, setAddressFocused] = useState(false);
+  const [balance, setBalance] = useState<string>('0.00');
+  const [safeAddress, setSafeAddress] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
-  const availableBalance = parseFloat(mockUser.balance.replace(',', ''));
+  useEffect(() => {
+    loadAccountData();
+  }, []);
+
+  const loadAccountData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getAccount();
+
+      if (response.error) {
+        Alert.alert('Error', response.error.message);
+        return;
+      }
+
+      if (response.data) {
+        const { balance: accountBalance, safeAddress: accountSafeAddress } = response.data;
+        setBalance(
+          parseFloat(accountBalance.totalBalance).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+        setSafeAddress(accountSafeAddress);
+      }
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'Failed to load account data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const availableBalance = parseFloat(balance.replace(/,/g, ''));
 
   const validation = useMemo(() => {
     const amountNum = parseFloat(amount) || 0;
@@ -43,7 +77,7 @@ export default function SendScreen() {
     }
 
     // Check if sending to self
-    if (address.toLowerCase() === mockUser.safeAddress.toLowerCase()) {
+    if (safeAddress && address.toLowerCase() === safeAddress.toLowerCase()) {
       errors.push("You can't send to yourself");
     }
 
@@ -76,8 +110,12 @@ export default function SendScreen() {
     setSending(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await api.send(address, amount);
+
+      if (response.error) {
+        Alert.alert('Error', response.error.message);
+        return;
+      }
 
       Alert.alert('Success', `$${amount} USDC sent successfully!`, [
         {
@@ -85,11 +123,15 @@ export default function SendScreen() {
           onPress: () => {
             setAddress('');
             setAmount('');
+            loadAccountData(); // Refresh balance
           },
         },
       ]);
-    } catch {
-      Alert.alert('Error', 'Failed to send. Please try again.');
+    } catch (err) {
+      Alert.alert(
+        'Error',
+        err instanceof Error ? err.message : 'Failed to send. Please try again.'
+      );
     } finally {
       setSending(false);
     }
@@ -112,10 +154,14 @@ export default function SendScreen() {
       {/* Balance */}
       <View className="bg-surface-100 rounded-xl border border-surface-300 p-4 mb-6">
         <Text className="text-zinc-400 text-sm">Available Balance</Text>
-        <View className="flex-row items-baseline mt-1">
-          <Text className="text-white text-2xl font-semibold">${mockUser.balance}</Text>
-          <Text className="text-zinc-400 ml-2">USDC</Text>
-        </View>
+        {loading ? (
+          <ActivityIndicator color="#00d974" className="mt-2" />
+        ) : (
+          <View className="flex-row items-baseline mt-1">
+            <Text className="text-white text-2xl font-semibold">${balance}</Text>
+            <Text className="text-zinc-400 ml-2">USDC</Text>
+          </View>
+        )}
       </View>
 
       {/* Address Input */}

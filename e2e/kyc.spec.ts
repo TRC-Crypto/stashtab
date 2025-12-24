@@ -3,30 +3,39 @@ import { test, expect } from '@playwright/test';
 /**
  * KYC Verification Flow E2E Tests
  *
- * Tests the KYC verification process.
- * Note: These tests require mocking KYC provider APIs.
+ * These tests verify KYC-related page navigation.
+ * Note: These tests require authenticated sessions for full functionality.
+ * In CI without authentication, protected routes redirect to login.
  */
 
 test.describe('KYC Verification', () => {
-  test.beforeEach(async ({ page }) => {
-    // In a real scenario, you'd set up authenticated session
-    await page.goto('/dashboard');
-  });
-
-  test('should show KYC gate for unverified users', async ({ page }) => {
-    // Navigate to a protected route
+  test('should handle deposit page (may require KYC)', async ({ page }) => {
     await page.goto('/deposit');
-    // Should either show KYC gate or allow access
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
+    // Wait for potential redirect
+    await page.waitForURL(/\/login/, { timeout: 10000 }).catch(() => {});
+
+    const url = page.url();
+    // Protected route should redirect to login when not authenticated
+    if (url.includes('/login')) {
+      await expect(page.locator('text=Welcome back')).toBeVisible();
+    } else {
+      // If on deposit page (authenticated), just verify page loaded
+      await expect(page.locator('body')).toBeVisible();
+    }
   });
 
-  test('should navigate to KYC verification', async ({ page }) => {
-    // This would test the KYC start flow
-    // Requires mocking Persona API
+  test('should handle settings page (KYC verification access)', async ({ page }) => {
     await page.goto('/settings');
-    // KYC section should be visible
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
+    // Wait for potential redirect
+    await page.waitForURL(/\/login/, { timeout: 10000 }).catch(() => {});
+
+    const url = page.url();
+    // Protected route should redirect to login when not authenticated
+    if (url.includes('/login')) {
+      await expect(page.locator('text=Welcome back')).toBeVisible();
+    } else {
+      // If on settings page (authenticated), just verify page loaded
+      await expect(page.locator('body')).toBeVisible();
+    }
   });
 });

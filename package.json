@@ -2,7 +2,32 @@
   "name": "stashtab",
   "version": "0.1.0",
   "private": false,
-  "description": "Open source DeFi neobank stack - Deposit, earn, send on-chain",
+  "description": "Open-source primitives for onchain finance—wallet infra, yield routing, stablecoin payments—composable, production-ready, MIT-licensed.",
+  "keywords": [
+    "defi",
+    "neobank",
+    "crypto",
+    "web3",
+    "ethereum",
+    "aave",
+    "safe",
+    "base",
+    "open-source",
+    "react-native",
+    "nextjs",
+    "cloudflare",
+    "crypto-banking",
+    "smart-wallet",
+    "yield-farming",
+    "stablecoin",
+    "cloudflare-workers",
+    "typescript",
+    "monorepo"
+  ],
+  "homepage": "https://github.com/TRC-Crypto/stashtab#readme",
+  "bugs": {
+    "url": "https://github.com/TRC-Crypto/stashtab/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/TRC-Crypto/stashtab.git"

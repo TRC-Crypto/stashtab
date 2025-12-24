@@ -57,7 +57,7 @@ describe('AaveService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new AaveService(mockPublicClient, 84532);
+    service = createAaveService({ chainId: 84532, publicClient: mockPublicClient });
   });
 
   it('should calculate yield per second', () => {

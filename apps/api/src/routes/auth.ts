@@ -76,14 +76,18 @@ authRoutes.post('/signup', async (c) => {
   const chainId = parseInt(c.env.CHAIN_ID);
   const safeAddress = await predictSafeAddress(ownerAddress, chainId, c.env.RPC_URL);
 
+  // Check for organization context (set by API key middleware)
+  const org = c.get('organization') as { id: string } | undefined;
+  const organizationId = org?.id || null;
+
   // Create user in database
   const userId = crypto.randomUUID();
   try {
     await c.env.DB.prepare(
-      `INSERT INTO users (id, privy_user_id, safe_address, owner_address, total_deposited, created_at, updated_at)
-       VALUES (?, ?, ?, ?, '0', datetime('now'), datetime('now'))`
+      `INSERT INTO users (id, privy_user_id, safe_address, owner_address, organization_id, total_deposited, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, '0', datetime('now'), datetime('now'))`
     )
-      .bind(userId, claims.userId, safeAddress, ownerAddress)
+      .bind(userId, claims.userId, safeAddress, ownerAddress, organizationId)
       .run();
   } catch (err) {
     throw new DatabaseError('Failed to create user account');

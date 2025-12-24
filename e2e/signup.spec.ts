@@ -9,31 +9,70 @@ import { test, expect } from '@playwright/test';
 test.describe('User Signup', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Wait for page to be fully loaded
+    await page.waitForLoadState('networkidle');
   });
 
   test('should display landing page', async ({ page }) => {
+    // Check page title
     await expect(page).toHaveTitle(/Stashtab/i);
-    await expect(page.locator('text=Neobank-in-a-Box')).toBeVisible();
+
+    // Check for main hero text
+    await expect(page.locator('text=Your money.')).toBeVisible();
+    await expect(page.locator('text=Always earning.')).toBeVisible();
+
+    // Check for Stashtab logo/branding
+    await expect(page.locator('text=Stashtab').first()).toBeVisible();
+
+    // Check for description text
+    await expect(page.locator('text=An open source DeFi neobank stack')).toBeVisible();
+
+    // Check for CTA buttons
+    await expect(page.locator('text=Launch App')).toBeVisible();
+    await expect(page.locator('text=Get Started')).toBeVisible();
   });
 
   test('should navigate to login page', async ({ page }) => {
+    // Click Launch App button in nav
     await page.click('text=Launch App');
     await expect(page).toHaveURL(/.*login/);
+
+    // Verify login page elements
+    await expect(page.locator('text=Welcome back')).toBeVisible();
+    await expect(page.locator('text=Sign In')).toBeVisible();
   });
 
   test('should show Privy login options', async ({ page }) => {
     await page.goto('/login');
-    // Privy modal should be accessible
-    // Note: Actual Privy integration testing requires test credentials
-    await expect(page.locator('body')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+
+    // Verify login page is loaded
+    await expect(page.locator('text=Welcome back')).toBeVisible();
+
+    // Check for Stashtab branding on login page
+    await expect(page.locator('text=Stashtab')).toBeVisible();
+
+    // The login button should be present (may show "Sign In" or "Loading..." depending on Privy state)
+    const loginButton = page.locator('button').filter({ hasText: /Sign In|Loading/ });
+    await expect(loginButton).toBeVisible();
+
+    // Note: Actual Privy modal interaction requires authentication setup
+    // In CI without Privy configured, the button may be disabled
   });
 
-  test('should redirect authenticated users to dashboard', async ({ page }) => {
-    // This test would require mocking Privy authentication
-    // For now, we'll just check the route exists
+  test('should handle dashboard route without authentication', async ({ page }) => {
+    // Navigate to dashboard without authentication
     await page.goto('/dashboard');
-    // Should either show dashboard or redirect to login
+    await page.waitForLoadState('networkidle');
+
+    // Without Privy configured, redirect won't happen (ready never becomes true)
+    // Just verify the page loads without errors - it may show "Loading..." or be blank
+    // The URL may stay on /dashboard if Privy isn't configured
     const url = page.url();
-    expect(url).toMatch(/\/dashboard|\/login/);
+    // URL could be /dashboard (no redirect if Privy not ready) or /login (if redirect happened)
+    expect(url).toMatch(/\/(dashboard|login)/);
+
+    // Page should load without errors
+    await expect(page.locator('body')).toBeVisible();
   });
 });

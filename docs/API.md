@@ -4,19 +4,22 @@ The Stashtab API is a RESTful API built with [Hono](https://hono.dev) and deploy
 
 ## Interactive Documentation
 
-When running locally or in production, access the interactive Swagger UI:
+When running locally, access the interactive Swagger UI:
 
 - **Local**: http://localhost:8787/docs
-- **Production**: https://api.stashtab.dev/docs
 
 The OpenAPI specification is available at `/openapi.json`.
 
+> **Note**: Production deployment URLs should be configured based on your deployment setup. Update the OpenAPI server configuration in `apps/api/src/openapi.ts` when deploying.
+
 ## Base URLs
 
-| Environment | URL |
-|------------|-----|
-| Local | `http://localhost:8787` |
-| Production | `https://api.stashtab.dev` |
+| Environment | URL                                |
+| ----------- | ---------------------------------- |
+| Local       | `http://localhost:8787`            |
+| Production  | Configure based on your deployment |
+
+For production deployments, update the server URL in your deployment configuration and in `apps/api/src/openapi.ts`.
 
 ## Authentication
 
@@ -37,7 +40,7 @@ Authorization: Bearer <privy-token>
 const token = await privy.getAccessToken();
 const response = await fetch('http://localhost:8787/account', {
   headers: {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
   },
 });
 ```
@@ -46,11 +49,11 @@ const response = await fetch('http://localhost:8787/account', {
 
 Rate limits are applied per-user for authenticated endpoints and per-IP for public endpoints.
 
-| Endpoint Type | Limit | Window |
-|--------------|-------|--------|
-| Public (yield) | 30 requests | 1 minute |
+| Endpoint Type   | Limit       | Window   |
+| --------------- | ----------- | -------- |
+| Public (yield)  | 30 requests | 1 minute |
 | Standard (read) | 60 requests | 1 minute |
-| Strict (write) | 10 requests | 1 minute |
+| Strict (write)  | 10 requests | 1 minute |
 
 ### Rate Limit Headers
 
@@ -85,52 +88,52 @@ All errors follow a consistent JSON format:
 
 #### Authentication Errors (401)
 
-| Code | Description |
-|------|-------------|
+| Code                 | Description                      |
+| -------------------- | -------------------------------- |
 | `AUTH_MISSING_TOKEN` | No Authorization header provided |
-| `AUTH_INVALID_TOKEN` | Token is invalid or malformed |
-| `AUTH_TOKEN_EXPIRED` | Token has expired |
-| `AUTH_NO_WALLET` | User has no embedded wallet |
+| `AUTH_INVALID_TOKEN` | Token is invalid or malformed    |
+| `AUTH_TOKEN_EXPIRED` | Token has expired                |
+| `AUTH_NO_WALLET`     | User has no embedded wallet      |
 
 #### Validation Errors (400)
 
-| Code | Description |
-|------|-------------|
-| `VALIDATION_FAILED` | Request body failed validation |
-| `INVALID_ADDRESS` | Invalid Ethereum address format |
-| `INVALID_AMOUNT` | Invalid amount (not positive integer) |
-| `MISSING_REQUIRED_FIELD` | Required field is missing |
+| Code                     | Description                           |
+| ------------------------ | ------------------------------------- |
+| `VALIDATION_FAILED`      | Request body failed validation        |
+| `INVALID_ADDRESS`        | Invalid Ethereum address format       |
+| `INVALID_AMOUNT`         | Invalid amount (not positive integer) |
+| `MISSING_REQUIRED_FIELD` | Required field is missing             |
 
 #### Resource Errors (404)
 
-| Code | Description |
-|------|-------------|
-| `USER_NOT_FOUND` | User account doesn't exist |
-| `ACCOUNT_NOT_FOUND` | Account not found |
+| Code                 | Description                      |
+| -------------------- | -------------------------------- |
+| `USER_NOT_FOUND`     | User account doesn't exist       |
+| `ACCOUNT_NOT_FOUND`  | Account not found                |
 | `RESOURCE_NOT_FOUND` | Requested resource doesn't exist |
 
 #### Business Logic Errors (422)
 
-| Code | Description |
-|------|-------------|
-| `INSUFFICIENT_FUNDS` | Not enough balance for operation |
-| `TRANSFER_FAILED` | Transfer could not be completed |
-| `WITHDRAWAL_FAILED` | Withdrawal could not be completed |
-| `SAFE_NOT_DEPLOYED` | Safe smart account not yet deployed |
+| Code                 | Description                         |
+| -------------------- | ----------------------------------- |
+| `INSUFFICIENT_FUNDS` | Not enough balance for operation    |
+| `TRANSFER_FAILED`    | Transfer could not be completed     |
+| `WITHDRAWAL_FAILED`  | Withdrawal could not be completed   |
+| `SAFE_NOT_DEPLOYED`  | Safe smart account not yet deployed |
 
 #### Rate Limiting (429)
 
-| Code | Description |
-|------|-------------|
+| Code                  | Description                        |
+| --------------------- | ---------------------------------- |
 | `RATE_LIMIT_EXCEEDED` | Too many requests, try again later |
 
 #### Server Errors (500)
 
-| Code | Description |
-|------|-------------|
-| `INTERNAL_ERROR` | Unexpected server error |
-| `DATABASE_ERROR` | Database operation failed |
-| `RPC_ERROR` | Blockchain RPC call failed |
+| Code             | Description                |
+| ---------------- | -------------------------- |
+| `INTERNAL_ERROR` | Unexpected server error    |
+| `DATABASE_ERROR` | Database operation failed  |
+| `RPC_ERROR`      | Blockchain RPC call failed |
 
 ## Endpoints
 
@@ -143,6 +146,7 @@ GET /
 Returns API status and links to documentation.
 
 **Response:**
+
 ```json
 {
   "name": "Stashtab API",
@@ -167,6 +171,7 @@ Authorization: Bearer <privy-token>
 Creates a new user account with a predicted Safe address. If the user already exists, returns existing account info.
 
 **Response (201):**
+
 ```json
 {
   "message": "Account created",
@@ -177,6 +182,7 @@ Creates a new user account with a predicted Safe address. If the user already ex
 ```
 
 **Response (200 - existing user):**
+
 ```json
 {
   "message": "User already exists",
@@ -199,6 +205,7 @@ Authorization: Bearer <privy-token>
 Returns full account information including balances and yield rates.
 
 **Response:**
+
 ```json
 {
   "userId": "uuid",
@@ -229,6 +236,7 @@ Authorization: Bearer <privy-token>
 Returns current balance and yield rate (lighter endpoint for refreshing).
 
 **Response:**
+
 ```json
 {
   "balance": {
@@ -262,6 +270,7 @@ Content-Type: application/json
 Send USDC to another address. Amount is in raw USDC units (6 decimals).
 
 **Response:**
+
 ```json
 {
   "message": "Transfer initiated",
@@ -287,6 +296,7 @@ Content-Type: application/json
 Withdraw USDC from Aave to an external address.
 
 **Response:**
+
 ```json
 {
   "message": "Withdrawal initiated",
@@ -309,6 +319,7 @@ GET /yield/rate
 Get the current Aave supply APY for USDC. Results are cached for 60 seconds.
 
 **Response:**
+
 ```json
 {
   "asset": "USDC",
@@ -331,6 +342,7 @@ GET /yield/history?period=7d
 Get historical APY data over time. Currently returns a placeholder response.
 
 **Query Parameters:**
+
 - `period`: `1d`, `7d`, `30d`, or `90d` (default: `7d`)
 
 ---
@@ -416,11 +428,7 @@ app.route('/my-feature', myFeatureRoutes);
 import { APIError, ErrorCode } from '../errors';
 
 // Throw typed errors
-throw new APIError(
-  ErrorCode.VALIDATION_FAILED,
-  'Custom error message',
-  { field: 'details' }
-);
+throw new APIError(ErrorCode.VALIDATION_FAILED, 'Custom error message', { field: 'details' });
 ```
 
 ## Local Development
@@ -443,4 +451,3 @@ pnpm test
 # Run tests in watch mode
 pnpm test:watch
 ```
-

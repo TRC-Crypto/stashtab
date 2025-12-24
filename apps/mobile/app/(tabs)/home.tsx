@@ -1,7 +1,16 @@
-import { View, Text, ScrollView, Pressable, RefreshControl, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  RefreshControl,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
-import { mockUser, mockTransactions, formatDate } from '@/lib/mockData';
+import { formatDate } from '@/lib/mockData';
+import api from '@/lib/api';
 
 // Simulate live yield calculation
 function useLiveYield(balance: number, apy: number) {
@@ -24,9 +33,17 @@ function useLiveYield(balance: number, apy: number) {
   return yieldAmount;
 }
 
-function TransactionItem({ transaction }: { transaction: (typeof mockTransactions)[0] }) {
+interface Transaction {
+  id?: string;
+  type: 'deposit' | 'withdrawal' | 'send' | 'receive';
+  amount: string;
+  timestamp: number;
+  status?: 'pending' | 'completed' | 'failed';
+}
+
+function TransactionItem({ transaction }: { transaction: Transaction }) {
   const isIncoming = transaction.type === 'deposit' || transaction.type === 'receive';
-  const icons = {
+  const icons: Record<string, string> = {
     deposit: '📥',
     withdrawal: '📤',
     send: '➡️',
@@ -36,11 +53,13 @@ function TransactionItem({ transaction }: { transaction: (typeof mockTransaction
   return (
     <Pressable className="flex-row items-center py-4 border-b border-surface-300 active:opacity-70">
       <View className="w-10 h-10 rounded-full bg-surface-300 items-center justify-center mr-3">
-        <Text className="text-lg">{icons[transaction.type]}</Text>
+        <Text className="text-lg">{icons[transaction.type] || '📋'}</Text>
       </View>
       <View className="flex-1">
         <Text className="text-white font-medium capitalize">{transaction.type}</Text>
-        <Text className="text-zinc-500 text-sm">{formatDate(transaction.timestamp)}</Text>
+        <Text className="text-zinc-500 text-sm">
+          {formatDate(transaction.timestamp.toString())}
+        </Text>
       </View>
       <View className="items-end">
         <Text className={`font-mono font-semibold ${isIncoming ? 'text-yield' : 'text-white'}`}>
@@ -54,12 +73,20 @@ function TransactionItem({ transaction }: { transaction: (typeof mockTransaction
   );
 }
 
-function YieldTicker({ balance, apy }: { balance: number; apy: number }) {
+function YieldTicker({
+  balance,
+  apy,
+  yieldEarned,
+}: {
+  balance: number;
+  apy: number;
+  yieldEarned: string;
+}) {
   const liveYield = useLiveYield(balance, apy);
 
   return (
     <View className="flex-row items-baseline">
-      <Text className="text-yield font-semibold">+${mockUser.yieldEarned}</Text>
+      <Text className="text-yield font-semibold">+${yieldEarned}</Text>
       {liveYield > 0 && (
         <Text className="text-yield/60 text-xs ml-1">+${liveYield.toFixed(8)}</Text>
       )}
@@ -69,18 +96,84 @@ function YieldTicker({ balance, apy }: { balance: number; apy: number }) {
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [accountData, setAccountData] = useState<{
+    balance: string;
+    yieldEarned: string;
+    apy: string;
+    safeAddress: string;
+    email?: string;
+  } | null>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadAccountData = useCallback(async () => {
+    try {
+      setError(null);
+      const response = await api.getAccount();
+
+      if (response.error) {
+        setError(response.error.message);
+        return;
+      }
+
+      if (response.data) {
+        const { balance, yieldRate, safeAddress } = response.data;
+        setAccountData({
+          balance: parseFloat(balance.totalBalance).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+          yieldEarned: parseFloat(balance.yieldEarned).toFixed(2),
+          apy: yieldRate.apyPercent.toFixed(2),
+          safeAddress,
+        });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load account data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await loadAccountData();
     setRefreshing(false);
-  }, []);
+  }, [loadAccountData]);
+
+  useEffect(() => {
+    loadAccountData();
+  }, [loadAccountData]);
 
   // Parse balance for calculations
-  const balanceNumber = parseFloat(mockUser.balance.replace(',', ''));
-  const apyNumber = parseFloat(mockUser.apy);
+  const balanceNumber = accountData ? parseFloat(accountData.balance.replace(/,/g, '')) : 0;
+  const apyNumber = accountData ? parseFloat(accountData.apy) : 0;
+
+  if (loading && !accountData) {
+    return (
+      <View className="flex-1 bg-surface-50 items-center justify-center">
+        <ActivityIndicator size="large" color="#00d974" />
+        <Text className="text-zinc-400 mt-4">Loading account...</Text>
+      </View>
+    );
+  }
+
+  if (error && !accountData) {
+    return (
+      <View className="flex-1 bg-surface-50 items-center justify-center px-6">
+        <Text className="text-red-400 text-lg mb-4">Error loading account</Text>
+        <Text className="text-zinc-400 text-center mb-6">{error}</Text>
+        <Pressable onPress={loadAccountData} className="bg-yield px-6 py-3 rounded-xl">
+          <Text className="text-black font-semibold">Retry</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  if (!accountData) {
+    return null;
+  }
 
   return (
     <ScrollView
@@ -92,26 +185,33 @@ export default function HomeScreen() {
       {/* Header */}
       <View className="px-6 pt-16 pb-8">
         <Text className="text-zinc-400 text-lg">Welcome back</Text>
-        <Text className="text-white text-2xl font-semibold mt-1">{mockUser.email}</Text>
+        <Text className="text-white text-2xl font-semibold mt-1">
+          {accountData.email ||
+            accountData.safeAddress.slice(0, 6) + '...' + accountData.safeAddress.slice(-4)}
+        </Text>
       </View>
 
       {/* Balance Card */}
       <View className="mx-6 bg-surface-100 rounded-2xl p-6 border border-surface-300">
         <Text className="text-zinc-400 mb-2">Total Balance</Text>
-        <Text className="text-white text-4xl font-bold">${mockUser.balance}</Text>
+        <Text className="text-white text-4xl font-bold">${accountData.balance}</Text>
 
         {/* Live Yield Ticker */}
         <View className="mt-4 p-3 bg-surface-200 rounded-lg">
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-zinc-500 text-xs mb-1">Yield Earned</Text>
-              <YieldTicker balance={balanceNumber} apy={apyNumber} />
+              <YieldTicker
+                balance={balanceNumber}
+                apy={apyNumber}
+                yieldEarned={accountData.yieldEarned}
+              />
             </View>
             <View className="items-end">
               <Text className="text-zinc-500 text-xs mb-1">Current APY</Text>
               <View className="flex-row items-center">
-                <View className="w-2 h-2 rounded-full bg-yield mr-2 animate-pulse" />
-                <Text className="text-white font-semibold">{mockUser.apy}%</Text>
+                <View className="w-2 h-2 rounded-full bg-yield mr-2" />
+                <Text className="text-white font-semibold">{accountData.apy}%</Text>
               </View>
             </View>
           </View>
@@ -154,7 +254,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View className="bg-yield/20 px-3 py-1 rounded-full">
-            <Text className="text-yield font-medium">{mockUser.apy}% APY</Text>
+            <Text className="text-yield font-medium">{accountData.apy}% APY</Text>
           </View>
         </View>
       </View>
@@ -168,14 +268,10 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {loading ? (
-          <View className="bg-surface-100 rounded-xl border border-surface-300 p-8 items-center">
-            <ActivityIndicator color="#00d974" />
-          </View>
-        ) : mockTransactions.length > 0 ? (
+        {transactions.length > 0 ? (
           <View className="bg-surface-100 rounded-xl border border-surface-300 px-4">
-            {mockTransactions.map((tx) => (
-              <TransactionItem key={tx.id} transaction={tx} />
+            {transactions.map((tx, index) => (
+              <TransactionItem key={tx.id || index} transaction={tx} />
             ))}
           </View>
         ) : (

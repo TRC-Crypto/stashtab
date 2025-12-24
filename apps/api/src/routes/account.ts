@@ -34,14 +34,28 @@ async function getAuthenticatedUser(c: Context<{ Bindings: Env }>): Promise<User
       throw new AuthenticationError('Invalid token', ErrorCode.AUTH_INVALID_TOKEN);
     }
 
-    const result = await c.env.DB.prepare('SELECT * FROM users WHERE privy_user_id = ?')
-      .bind(claims.userId)
+    // Check for organization context (set by API key middleware)
+    const org = c.get('organization') as { id: string } | undefined;
+    let query = 'SELECT * FROM users WHERE privy_user_id = ?';
+    const bindings: any[] = [claims.userId];
+
+    // If organization context exists, filter by organization_id
+    if (org) {
+      query += ' AND organization_id = ?';
+      bindings.push(org.id);
+    }
+
+    const result = await c.env.DB.prepare(query)
+      .bind(...bindings)
       .first();
 
     const user = result as User | null;
 
     if (!user) {
-      throw new AuthenticationError('User not found. Please sign up first.', ErrorCode.AUTH_INVALID_TOKEN);
+      throw new AuthenticationError(
+        'User not found. Please sign up first.',
+        ErrorCode.AUTH_INVALID_TOKEN
+      );
     }
 
     // Set userId in context for logging

@@ -53,29 +53,34 @@ User settings include:
 
 ## Mobile Application
 
+Screenshots of the mobile app are available in [mobile-screenshots/](./mobile-screenshots/).
+
 ### Home Screen
 
 The mobile app home screen shows:
 
-- Balance overview
-- Quick actions
-- Recent activity
+- Balance overview with live yield ticker
+- Quick actions (Deposit, Send, Buy)
+- Recent activity feed
+- Current APY display
 
 ### Deposit Screen
 
 Mobile deposit flow with:
 
-- QR code scanner
-- Address display
-- Copy to clipboard
+- QR code generation for Safe address
+- Address display with copy functionality
+- Transaction status polling
+- Network indicator (Base Sepolia/Base)
 
 ### Send Screen
 
 Mobile send interface with:
 
-- Recipient input
-- Amount selector
-- Transaction preview
+- Recipient address input with validation
+- Amount selector with quick amounts
+- Transaction preview with fees
+- Real-time balance updates
 
 ## Admin Dashboard
 
@@ -105,6 +110,30 @@ Admin analytics dashboard:
 - Transaction volume
 - Revenue metrics
 - Error rates
+
+## Demo Application
+
+The interactive demo app showcases Stashtab features without requiring authentication.
+
+### Demo Home Page
+
+Features:
+
+- Hero section with value proposition
+- Feature cards (Instant Setup, Auto Yield, Smart Accounts)
+- Architecture diagram
+- Tech stack showcase
+- Call-to-action buttons
+
+### Interactive Demo Page
+
+Interactive features:
+
+- **Deposit Flow**: QR code generation, address display, copy functionality
+- **Yield Calculator**: Interactive calculator with timeframe selection
+- **API Playground**: Example API requests and responses
+
+See [DEMO.md](./DEMO.md) for more information about the demo app.
 
 ## API Documentation
 
