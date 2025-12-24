@@ -9,12 +9,8 @@ import type { StashtabPublicClient, StashtabWalletClient } from '../../client';
 import { deploySafe, executeSafeTransaction } from '../../safe/safeOperations';
 import { SafeService } from '../../safe/SafeService';
 import type { SafeTransactionData } from '../../safe/types';
-import type {
-  AccountAbstraction,
-  AccountInfo,
-  TransactionData,
-  TransactionResult,
-} from './abstraction';
+import type { TransactionResult } from '../types';
+import type { AccountAbstraction, AccountInfo, TransactionData } from './abstraction';
 
 /**
  * Safe account implementation

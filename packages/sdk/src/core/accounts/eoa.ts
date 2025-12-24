@@ -6,12 +6,8 @@
 
 import type { Address, Hex, Account } from 'viem';
 import type { StashtabPublicClient, StashtabWalletClient } from '../../client';
-import type {
-  AccountAbstraction,
-  AccountInfo,
-  TransactionData,
-  TransactionResult,
-} from './abstraction';
+import type { TransactionResult } from '../types';
+import type { AccountAbstraction, AccountInfo, TransactionData } from './abstraction';
 
 /**
  * EOA account implementation
