@@ -60,19 +60,15 @@ test.describe('User Signup', () => {
     // In CI without Privy configured, the button may be disabled
   });
 
-  test('should redirect authenticated users to dashboard', async ({ page }) => {
+  test('should redirect unauthenticated users from dashboard to login', async ({ page }) => {
     // Navigate to dashboard without authentication
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    // Wait for redirect (dashboard layout redirects async)
+    await page.waitForURL(/\/login/, { timeout: 10000 }).catch(() => {});
 
-    // Should either show dashboard (if authenticated) or redirect to login
     const url = page.url();
-    expect(url).toMatch(/\/dashboard|\/login/);
-
-    // If redirected to login, verify login page
-    if (url.includes('/login')) {
-      await expect(page.locator('text=Welcome back')).toBeVisible();
-    }
-    // If on dashboard, verify dashboard elements (would require auth mocking)
+    // Should redirect to login when not authenticated
+    expect(url).toMatch(/\/login/);
+    await expect(page.locator('text=Welcome back')).toBeVisible();
   });
 });

@@ -3,60 +3,39 @@ import { test, expect } from '@playwright/test';
 /**
  * KYC Verification Flow E2E Tests
  *
- * Tests the KYC verification process.
- * Note: These tests require mocking KYC provider APIs.
+ * These tests verify KYC-related page navigation.
+ * Note: These tests require authenticated sessions for full functionality.
+ * In CI without authentication, protected routes redirect to login.
  */
 
 test.describe('KYC Verification', () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to dashboard (may redirect to login if not authenticated)
-    await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
-  });
-
-  test('should show KYC gate for unverified users', async ({ page }) => {
-    // Navigate to a protected route that may require KYC
+  test('should handle deposit page (may require KYC)', async ({ page }) => {
     await page.goto('/deposit');
-    await page.waitForLoadState('networkidle');
+    // Wait for potential redirect
+    await page.waitForURL(/\/login/, { timeout: 10000 }).catch(() => {});
 
-    // Verify page loaded
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
-
-    // If authenticated, check for deposit page or KYC gate
-    // If not authenticated, should redirect to login
     const url = page.url();
-
+    // Protected route should redirect to login when not authenticated
     if (url.includes('/login')) {
-      // Expected: redirect to login if not authenticated
       await expect(page.locator('text=Welcome back')).toBeVisible();
-    } else if (url.includes('/deposit')) {
-      // On deposit page - may show KYC gate or deposit form
-      // Both are valid states
-      await expect(body).toBeVisible();
+    } else {
+      // If on deposit page (authenticated), just verify page loaded
+      await expect(page.locator('body')).toBeVisible();
     }
   });
 
-  test('should navigate to KYC verification', async ({ page }) => {
-    // Navigate to settings page where KYC verification would be accessible
+  test('should handle settings page (KYC verification access)', async ({ page }) => {
     await page.goto('/settings');
-    await page.waitForLoadState('networkidle');
+    // Wait for potential redirect
+    await page.waitForURL(/\/login/, { timeout: 10000 }).catch(() => {});
 
-    // Verify page loaded
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
-
-    // If authenticated, settings page should be accessible
-    // If not authenticated, should redirect to login
     const url = page.url();
-
+    // Protected route should redirect to login when not authenticated
     if (url.includes('/login')) {
-      // Expected: redirect to login if not authenticated
       await expect(page.locator('text=Welcome back')).toBeVisible();
-    } else if (url.includes('/settings')) {
-      // On settings page - KYC section may be visible
-      // Note: Actual KYC UI elements would require authentication and KYC provider setup
-      await expect(body).toBeVisible();
+    } else {
+      // If on settings page (authenticated), just verify page loaded
+      await expect(page.locator('body')).toBeVisible();
     }
   });
 });
